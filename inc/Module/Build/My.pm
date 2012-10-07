@@ -7,6 +7,7 @@ use warnings;
 
 use base 'Module::Build';
 
+use Config;
 use ExtUtils::CBuilder;
 use ExtUtils::CChecker;
 
@@ -23,6 +24,11 @@ sub ACTION_config_gnulib {
     my $chk = ExtUtils::CChecker->new(
         defines_to => $config_h,
     );
+
+    foreach my $func (qw( localtime_r gmtime_r )) {
+        $chk->define(sprintf 'HAVE_%s', uc($func))
+            if $Config{"d_$func 1"};
+    };
 
     foreach my $kw (qw( __restrict __restrict__ _Restrict restrict )) {
         last if $chk->try_compile_run(
@@ -43,6 +49,18 @@ main ()
 }
 EOF
     }
+
+    $chk->try_compile_run(
+        define => "HAVE_DECL_TZNAME 1",
+        source => << "EOF" );
+#include <time.h>
+int main () {
+#ifndef tzname
+    (void) tzname;
+#endif
+    return 0;
+}
+EOF
 
     $chk->define('my_strftime gnu_strftime');
 
