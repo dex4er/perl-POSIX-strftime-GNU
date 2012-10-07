@@ -53,15 +53,17 @@ sub ACTION_gnulib {
     my $self = shift;
     $self->depends_on("config_gnulib");
 
-    {
-        my $o = $cc->compile(source => 'gnulib/lib/time_r.c', include_dirs => [qw( gnulib gnulib/lib )], extra_compiler_flags => $self->extra_compiler_flags);
+    if (my $o = $cc->object_file(my $c = 'gnulib/lib/time_r.c')) {
         $self->add_to_cleanup($o);
+        $cc->compile(source => $c, object_file => $o, include_dirs => [qw( gnulib gnulib/lib )], extra_compiler_flags => $self->extra_compiler_flags)
+            unless $self->up_to_date($c, $o);
         $objs{$o} = $o;
     }
 
-    {
-        my $o = $cc->compile(source => 'gnulib/lib/strftime.c', include_dirs => [qw( gnulib gnulib/lib )], extra_compiler_flags => $self->extra_compiler_flags);
+    if (my $o = $cc->object_file(my $c = 'gnulib/lib/strftime.c')) {
         $self->add_to_cleanup($o);
+        $cc->compile(source => $c, object_file => $o, include_dirs => [qw( gnulib gnulib/lib )], extra_compiler_flags => $self->extra_compiler_flags)
+            unless $self->up_to_date($c, $o);
         $objs{$o} = $o;
     }
 
