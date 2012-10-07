@@ -33,9 +33,6 @@ my $build = Module::Build::My->new(
         'ExtUtils::CChecker'    => 0,
         'Test::More'            => 0,
     },
-    include_dirs            => [
-        'xslib',
-    ],
     xs_files                => {
         'xs/strftime.xs' => 'lib/POSIX/strftime/GNU/XS.xs',
     },

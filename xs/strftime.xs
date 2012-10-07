@@ -2,7 +2,7 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include "gnu_strftime.h"
+size_t gnu_strftime (char *s, size_t maxsize, const char *format, const struct tm *tp);
 
 /*    Based on util.c
  *
@@ -50,7 +50,7 @@ my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int
 #endif
   buflen = 64;
   Newx(buf, buflen, char);
-  len = gnu_strftime(buf, buflen, fmt, &mytm, 1, 0);
+  len = gnu_strftime(buf, buflen, fmt, &mytm);
   /*
   ** The following is needed to handle to the situation where
   ** tmpbuf overflows.  Basically we want to allocate a buffer
@@ -93,7 +93,7 @@ my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int
 MODULE = POSIX::strftime::GNU::XS    PACKAGE = POSIX::strftime::GNU::XS
 
 void
-strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)
+xs_strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)
     SV *            fmt
     int             sec
     int             min

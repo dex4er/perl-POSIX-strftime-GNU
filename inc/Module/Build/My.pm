@@ -17,8 +17,11 @@ my %objs;
 sub ACTION_config_gnulib {
     my $self = shift;
 
+    my $config_h = 'gnulib/config.h';
+    $self->add_to_cleanup($config_h);
+
     my $chk = ExtUtils::CChecker->new(
-        defines_to => 'gnulib/config.h',
+        defines_to => $config_h,
     );
 
     foreach my $kw (qw( __restrict __restrict__ _Restrict restrict )) {

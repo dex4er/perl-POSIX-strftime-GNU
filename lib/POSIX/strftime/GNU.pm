@@ -6,12 +6,31 @@ POSIX::strftime::GNU - Skeleton for new modules
 
 =head1 SYNOPSIS
 
-This is a skeleton useful for new modules which are built with
-L<Module::Builder>.
+  use POSIX::strftime::GNU;
+  use POSIX 'strftime';
+  print POSIX::strftime('%a, %d %b %Y %T %z', localtime);
 
-The C<master> branch contains the versioned files without all automaticly
-generated content and the C<cpan> branch contains the files which are
-distributed as CPAN package.
+command line:
+
+  C:\> set PERL_ANYEVENT_LOG=filter=debug
+  C:\> perl -MPOSIX::strftime::GNU -MAnyEvent -e "AE::cv->send"
+
+=head1 DESCRIPTION
+
+This is a wrapper for L<POSIX::strftime|POSIX/strftime> which implements more
+character sequences compatible with GNU systems.
+
+It can be helpful if you run some software on operating system where these
+extensions, especially C<%z> sequence, are not supported, i.e. on Microsoft
+Windows. On such system some software can work incorrectly, i.e. logging for
+L<Plack> and L<AnyEvent> modules might be broken.
+
+The XS module is used if compilator is available and can module can be loaded.
+The XS is mandatory if C<PERL_POSIX_STRFTIME_GNU_XS> environment variable is
+true.
+
+The PP module is used when XS module can not be loaded or
+C<PERL_POSIX_STRFTIME_GNU_PP> environment variable is true.
 
 =for readme stop
 
@@ -24,17 +43,16 @@ use warnings;
 
 our $VERSION = '0.01';
 
-use POSIX;
+use Carp ();
+use POSIX ();
 
-eval {
-    require XSLoader;
-    my $pkg = __PACKAGE__ . '::XS';
-    XSLoader::load($pkg, $VERSION);
-    no strict 'refs';
-    no warnings;
-    *strftime = *{$pkg . '::strftime'};
+!$ENV{PERL_POSIX_STRFTIME_GNU_PP} || $ENV{PERL_POSIX_STRFTIME_GNU_XS} and eval {
+    require POSIX::strftime::GNU::XS;
+    *strftime = *POSIX::strftime::GNU::XS::strftime;
 } or do {
-    *strftime = sub { die 'Not implemented'; };
+    die $@ if $ENV{PERL_POSIX_STRFTIME_GNU_XS};
+    require POSIX::strftime::GNU::PP;
+    *strftime = *POSIX::strftime::GNU::PP::strftime;
 };
 
 sub import {
@@ -43,109 +61,18 @@ sub import {
     *POSIX::strftime = *strftime;
 };
 
-=head1 METHODS
-
-=over
-
-=item hello
-
-Prints "Hello world!" message.
-
-=back
-
-=cut
-
-sub hello {
-    print "Hello world!\n";
-    return;
-};
-
 1;
 
 
 =for readme continue
 
-=head1 PREREQUISITES
-
-For distribution archive: 
-
-=over 2
-
-=item *
-
-L<Module::Build>
-
-=item *
-
-L<Pod::Readme> (if C<create_readme> is used)
-
-=item *
-
-L<Software::License> (if C<create_license> is used)
-
-=item *
-
-L<Module::Signature> (if C<sign> is used)
-
-=back
-
-For extra tests (called as C<prove -Ilib xt>)
-
-=over 2
-
-=item *
-
-L<Test::CheckChanges>
-
-=item *
-
-L<File::Slurp>
-
-=item *
-
-L<Readonly>
-
-=item *
-
-L<Test::Distribution>
-
-=item *
-
-L<Test::Kwalitee>
-
-=item *
-
-L<Test::Perl::Critic>
-
-=item *
-
-L<Test::Pod>
-
-=item *
-
-L<Test::Pod::Coverage>
-
-=item *
-
-L<Test::Spelling>
-
-=item *
-
-L<Test::Signature>
-
-=back
-
-=head1 SEE ALSO
-
-L<Module::Build>.
-
 =head1 BUGS
 
 If you find the bug or want to implement new features, please report it at
-L<https://github.com/dex4er/perl-DEXTER-Module-Skeleton/issues>
+L<https://github.com/dex4er/perl-POSIX-strftime-GNU/issues>
 
 The code repository is available at
-L<http://github.com/dex4er/perl-DEXTER-Module-Skeleton>
+L<http://github.com/dex4er/perl-POSIX-strftime-GNU>
 
 =head1 AUTHOR
 
