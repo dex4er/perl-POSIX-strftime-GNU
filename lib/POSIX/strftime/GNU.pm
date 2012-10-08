@@ -2,7 +2,7 @@ package POSIX::strftime::GNU;
 
 =head1 NAME
 
-POSIX::strftime::GNU - Skeleton for new modules
+POSIX::strftime::GNU - strftime with GNU extensions
 
 =head1 SYNOPSIS
 

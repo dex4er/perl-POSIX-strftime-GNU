@@ -2,7 +2,7 @@ package POSIX::strftime::GNU::PP;
 
 =head1 NAME
 
-POSIX::strftime::GNU::PP - Pure-Perl extension for POSIX::strftime
+POSIX::strftime::GNU::PP - Pure-Perl extension for POSIX::strftime::GNU
 
 =head1 SYNOPSIS
 

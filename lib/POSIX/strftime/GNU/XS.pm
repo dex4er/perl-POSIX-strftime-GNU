@@ -2,7 +2,7 @@ package POSIX::strftime::GNU::XS;
 
 =head1 NAME
 
-POSIX::strftime::GNU::XS - XS extension for POSIX::strftime
+POSIX::strftime::GNU::XS - XS extension for POSIX::strftime::GNU
 
 =head1 SYNOPSIS
 
