@@ -27,7 +27,7 @@ sub ACTION_config_gnulib {
 
     foreach my $func (qw( localtime_r gmtime_r )) {
         $chk->define(sprintf 'HAVE_%s', uc($func))
-            if $Config{"d_$func 1"};
+            if $Config{"d_$func"};
     };
 
     foreach my $kw (qw( __restrict __restrict__ _Restrict restrict )) {
@@ -78,7 +78,7 @@ sub ACTION_gnulib {
         $objs{$o} = $o;
     }
 
-    if (my $o = $cc->object_file(my $c = 'gnulib/lib/strftime.c')) {
+    if (my $o = $cc->object_file(my $c = 'gnulib/strftime_r.c')) {
         $self->add_to_cleanup($o);
         $cc->compile(source => $c, object_file => $o, include_dirs => [qw( gnulib gnulib/lib )], extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
