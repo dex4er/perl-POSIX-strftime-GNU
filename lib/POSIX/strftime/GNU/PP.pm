@@ -137,7 +137,9 @@ our $offset2zone = sub {
 
     return $zone if defined $zone;
 
-    return sprintf 'GMT%s%d', $1, $2 if $off =~ /^([+-])(\d\d)00$/;
+    if ($off =~ /^([+-])(\d\d)00$/) {
+        return sprintf 'GMT%s%d', $1, $2;
+    };
 
     return 'Etc';
 };

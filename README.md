@@ -23,7 +23,7 @@ extensions, especially `%z` sequence, are not supported, i.e. on Microsoft
 Windows. On such system some software can work incorrectly, i.e. logging for
 [Plack](http://search.cpan.org/perldoc?Plack) and [AnyEvent](http://search.cpan.org/perldoc?AnyEvent) modules might be broken.
 
-The XS module is used if compilator is available and can module can be loaded.
+The XS module is used if compiler is available and can module can be loaded.
 The XS is mandatory if `PERL_POSIX_STRFTIME_GNU_XS` environment variable is
 true.
 

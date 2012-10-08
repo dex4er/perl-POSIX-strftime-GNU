@@ -5,6 +5,10 @@ verbose = 4
 [ControlStructures::ProhibitCascadingIfElse]
 max_elsif = 5
 
+[-ControlStructures::ProhibitNegativeExpressionsInUnlessAndUntilConditions]
+
+[-ErrorHandling::RequireCarping]
+
 [Modules::ProhibitExcessMainComplexity]
 max_mccabe = 30
 
@@ -33,3 +37,5 @@ allow = all
 
 [TestingAndDebugging::ProhibitProlongedStrictureOverride]
 statements = 12
+
+[-Variables::ProhibitPackageVars]

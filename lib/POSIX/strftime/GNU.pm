@@ -25,7 +25,7 @@ extensions, especially C<%z> sequence, are not supported, i.e. on Microsoft
 Windows. On such system some software can work incorrectly, i.e. logging for
 L<Plack> and L<AnyEvent> modules might be broken.
 
-The XS module is used if compilator is available and can module can be loaded.
+The XS module is used if compiler is available and can module can be loaded.
 The XS is mandatory if C<PERL_POSIX_STRFTIME_GNU_XS> environment variable is
 true.
 
@@ -46,19 +46,26 @@ our $VERSION = '0.01';
 use Carp ();
 use POSIX ();
 
-!$ENV{PERL_POSIX_STRFTIME_GNU_PP} || $ENV{PERL_POSIX_STRFTIME_GNU_XS} and eval {
-    require POSIX::strftime::GNU::XS;
-    *strftime = *POSIX::strftime::GNU::XS::strftime;
-} or do {
-    die $@ if $ENV{PERL_POSIX_STRFTIME_GNU_XS};
+my $xs_loaded;
+
+if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
+    $xs_loaded = eval {
+        require POSIX::strftime::GNU::XS;
+        *strftime = *POSIX::strftime::GNU::XS::strftime;
+        1;
+    };
+    die $@ if $@ and $ENV{PERL_POSIX_STRFTIME_GNU_XS};
+};
+
+if (not $xs_loaded) {
     require POSIX::strftime::GNU::PP;
     *strftime = *POSIX::strftime::GNU::PP::strftime;
 };
 
 sub import {
     my ($class) = @_;
-    no strict 'refs';
     *POSIX::strftime = *strftime;
+    return 1;
 };
 
 1;
