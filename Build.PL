@@ -44,6 +44,9 @@ my $build = Module::Build::My->new(
     xs_files                => {
     },
     extra_compiler_flags    => $cflags,
+    include_dirs            => [
+        'xs',
+    ],
     auto_configure_requires => 0,
     create_makefile_pl      => 'traditional',
     create_readme           => 1,

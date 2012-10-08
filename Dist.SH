@@ -6,6 +6,8 @@ PERL=${PERL:-perl}
 
 test -x Build && ./Build distclean
 
+$PERL -MDevel::PPPort -e 'Devel::PPPort::WriteFile("xs/ppport.h")'
+
 $PERL Build.PL
 
 rm -f MANIFEST

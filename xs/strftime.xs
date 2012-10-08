@@ -1,8 +1,21 @@
+/*    POSIX::strftime::GNU::XS - XS extension for POSIX::strftime::GNU
+ *
+ *    Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
+ *
+ *    This is free software; you can redistribute it and/or modify it under
+ *    the same terms as perl itself.
+ */
+
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 
+#define NEED_sv_2pv_flags
+#include "ppport.h"
+
+
 size_t gnu_strftime (char *s, size_t maxsize, const char *format, const struct tm *tp);
+
 
 /*    Based on util.c
  *
@@ -21,7 +34,9 @@ my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int
   struct tm mytm;
   int len;
 
+#ifdef PERL_ARGS_ASSERT_MY_STRFTIME
   PERL_ARGS_ASSERT_MY_STRFTIME;
+#endif
 
   init_tm(&mytm);	/* XXX workaround - see init_tm() above */
   mytm.tm_sec = sec;
@@ -90,6 +105,7 @@ my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int
   }
 }
 
+
 MODULE = POSIX::strftime::GNU::XS    PACKAGE = POSIX::strftime::GNU::XS
 
 void
@@ -106,6 +122,7 @@ xs_strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = 
     int             isdst
 CODE:
 {
+#if (PERL_BCDVERSION >= 0x5011001)
     char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), sec, min, hour, mday, mon, year, wday, yday, isdst);
     if (buf) {
         SV *const sv = sv_newmortal();
@@ -115,4 +132,11 @@ CODE:
         }
         ST(0) = sv;
     }
+#else
+    char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), sec, min, hour, mday, mon, year, wday, yday, isdst);
+    if (buf) {
+        ST(0) = sv_2mortal(newSVpv(buf, 0));
+        Safefree(buf);
+    }
+#endif
 }
