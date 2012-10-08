@@ -7,6 +7,7 @@ use warnings;
 
 use lib 'inc';
 use Module::Build::My;
+use ExtUtils::CBuilder;
 
 use Config;
 
@@ -33,8 +34,14 @@ my $build = Module::Build::My->new(
         'ExtUtils::CChecker'    => 0,
         'Test::More'            => 0,
     },
+    get_options             => {
+        pp => {},
+    },
+    pm_files                => {
+        'lib/POSIX/strftime/GNU.pm' => 'lib/POSIX/strftime/GNU.pm',
+        'lib/POSIX/strftime/GNU/PP.pm' => 'lib/POSIX/strftime/GNU/PP.pm',
+    },
     xs_files                => {
-        'xs/strftime.xs' => 'lib/POSIX/strftime/GNU/XS.xs',
     },
     extra_compiler_flags    => $cflags,
     auto_configure_requires => 0,
@@ -54,5 +61,14 @@ my $build = Module::Build::My->new(
         },
     },
 );
+
+my $cc = ExtUtils::CBuilder->new;
+
+$build->args(pp => 1) if not $cc->have_compiler;
+
+if (! $build->args('pp')) {
+    $build->xs_files({ %{$build->xs_files}, 'xs/strftime.xs' => 'lib/POSIX/strftime/GNU/XS.xs' });
+    $build->pm_files({ %{$build->pm_files}, 'lib/POSIX/strftime/GNU/XS.pm' => 'lib/POSIX/strftime/GNU/XS.pm' });
+};
 
 $build->create_build_script;

@@ -17,6 +17,7 @@ my %objs;
 
 sub ACTION_config_gnulib {
     my $self = shift;
+    return if $self->args('pp');
 
     my $config_h = 'gnulib/config.h';
     $self->add_to_cleanup($config_h);
@@ -69,6 +70,8 @@ EOF
 
 sub ACTION_gnulib {
     my $self = shift;
+    return if $self->args('pp');
+
     $self->depends_on("config_gnulib");
 
     if (my $o = $cc->object_file(my $c = 'gnulib/lib/time_r.c')) {
