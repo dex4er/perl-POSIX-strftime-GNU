@@ -63,3 +63,11 @@
 \d+\.\d+\b
 ^MYMETA.yml$
 ^MYMETA\.json$
+
+# Avoid compiler artefacts
+\.o$
+
+# Others
+^lib/.*\.xs$
+^lib/.*\.c$
+^gnulib/config.h$
