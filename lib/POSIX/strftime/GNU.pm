@@ -48,6 +48,18 @@ our $VERSION = '0.01';
 use Carp ();
 use POSIX ();
 
+=head1 FUNCTIONS
+
+=over
+
+=item $str = strftime (@time)
+
+This is replacement for L<POSIX::strftime|POSIX/strftime> function.
+
+=back
+
+=cut
+
 my $xs_loaded;
 
 if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
@@ -76,6 +88,10 @@ sub import {
 =for readme continue
 
 =head1 BUGS
+
+XS extension does implement all character sequences in C code, yet, especially
+C<%z> and C<%Z> and requires some Perl code for its job. It means that it is
+as slow on Microsoft Windows as PP extension.
 
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/perl-POSIX-strftime-GNU/issues>

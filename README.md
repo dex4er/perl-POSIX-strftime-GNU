@@ -30,7 +30,17 @@ true.
 The PP module is used when XS module can not be loaded or
 `PERL_POSIX_STRFTIME_GNU_PP` environment variable is true.
 
+# FUNCTIONS
+
+- $str = strftime (@time)
+
+This is replacement for [POSIX::strftime](http://search.cpan.org/perldoc?POSIX#strftime) function.
+
 # BUGS
+
+XS extension does implement all character sequences in C code, yet, especially
+`%z` and `%Z` and requires some Perl code for its job. It means that it is
+as slow on Microsoft Windows as PP extension.
 
 If you find the bug or want to implement new features, please report it at
 [https://github.com/dex4er/perl-POSIX-strftime-GNU/issues](https://github.com/dex4er/perl-POSIX-strftime-GNU/issues)

@@ -24,7 +24,7 @@ use warnings;
 
 our $VERSION = '0.01';
 
-use POSIX::strftime::GNU::Util;
+use POSIX::strftime::GNU::PP;
 
 use Carp ();
 use Config;
@@ -37,11 +37,23 @@ my %format = (
     $^O eq 'MSWin32' ? (h => sub { '%b' }) : (),
     $^O eq 'MSWin32' ? (r => sub { '%I:%M:%S %p' }) : (),
     $^O eq 'MSWin32' ? (s => sub { Time::Local::timegm(@_) }) : (),
-    z => \&POSIX::strftime::GNU::Util::tzoffset,
-    Z => \&POSIX::strftime::GNU::Util::tzname,
+    z => \&POSIX::strftime::GNU::PP::tzoffset,
+    Z => \&POSIX::strftime::GNU::PP::tzname,
 );
 
 my $formats = join '', sort keys %format;
+
+=head1 FUNCTIONS
+
+=over
+
+=item $str = strftime (@time)
+
+This is replacement for L<POSIX::strftime|POSIX/strftime> function.
+
+=back
+
+=cut
 
 if ($^O eq 'MSWin32' or not $Config{d_tm_tm_zone}) {
     *strftime = sub {

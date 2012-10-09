@@ -28,6 +28,10 @@ DESCRIPTION
     `PERL_POSIX_STRFTIME_GNU_PP' environment variable is true.
 
 BUGS
+    XS extension does implement all character sequences in C code, yet,
+    especially `%z' and `%Z' and requires some Perl code for its job. It
+    means that it is as slow on Microsoft Windows as PP extension.
+
     If you find the bug or want to implement new features, please report it
     at https://github.com/dex4er/perl-POSIX-strftime-GNU/issues
 
