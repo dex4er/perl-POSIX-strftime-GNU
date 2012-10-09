@@ -13,8 +13,6 @@ POSIX::strftime::GNU::XS - XS extension for POSIX::strftime::GNU
 This is XS extension for POSIX::strftime which implements more character
 sequences compatible with GNU systems.
 
-=for readme stop
-
 =cut
 
 
@@ -23,6 +21,8 @@ use strict;
 use warnings;
 
 our $VERSION = '0.01';
+
+use POSIX::strftime::GNU::Util;
 
 use Carp ();
 use Config;
@@ -38,8 +38,8 @@ else {
     require POSIX::strftime::GNU::PP;
 
     my %format = (
-        z => $POSIX::strftime::GNU::PP::tzoffset,
-        Z => $POSIX::strftime::GNU::PP::offset2zone,
+        z => \&POSIX::strftime::GNU::Util::tzoffset,
+        Z => \&POSIX::strftime::GNU::Util::tzname,
     );
 
     *strftime = sub {
@@ -56,8 +56,6 @@ else {
 
 1;
 
-
-=for readme continue
 
 =head1 SEE ALSO
 

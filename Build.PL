@@ -41,6 +41,7 @@ my $build = Module::Build::My->new(
     pm_files                => {
         'lib/POSIX/strftime/GNU.pm' => 'lib/POSIX/strftime/GNU.pm',
         'lib/POSIX/strftime/GNU/PP.pm' => 'lib/POSIX/strftime/GNU/PP.pm',
+        'lib/POSIX/strftime/GNU/Util.pm' => 'lib/POSIX/strftime/GNU/Util.pm',
     },
     xs_files                => {
     },
