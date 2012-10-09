@@ -9,7 +9,6 @@ use base 'Module::Build';
 
 use Config;
 use ExtUtils::CBuilder;
-use ExtUtils::CChecker;
 
 my $cc = ExtUtils::CBuilder->new;
 
@@ -21,6 +20,8 @@ sub ACTION_config_gnulib {
 
     my $config_h = 'gnulib/config.h';
     $self->add_to_cleanup($config_h);
+
+    require ExtUtils::CChecker;
 
     my $chk = ExtUtils::CChecker->new(
         defines_to => $config_h,
