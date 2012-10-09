@@ -10,9 +10,9 @@ $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_
 use Test::More tests => 3;
 
 BEGIN { use_ok 'POSIX::strftime::GNU'; }
-BEGIN { use_ok 'POSIX', qw( strftime locale_h ); }
+BEGIN { use_ok 'POSIX', qw( strftime ); }
 
-setlocale(LC_TIME, 'C');
+POSIX::setlocale(&POSIX::LC_TIME, 'C');
 
 my $date = strftime('%a, %d %b %Y %T %z', localtime);
 
