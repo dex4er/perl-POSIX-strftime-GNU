@@ -133,6 +133,8 @@ our $offset2zone = sub {
 
     my $off = $tzoffset->(@t);
 
+    return 'GMT' if exists $ENV{TZ} and $ENV{TZ} eq 'GMT';
+
     my $zone = $t[8] ? $offset2zone_dst{$off} : $offset2zone_std{$off};
 
     return $zone if defined $zone;
@@ -150,7 +152,7 @@ my %format = (
     e => sub { sprintf '%2d', $_[3] },
     F => sub { '%Y-%m-%d' },
     G => $isoyearnum,
-    g => sub { $isoyearnum->(@_) % 100 },
+    g => sub { sprintf '%02d', $isoyearnum->(@_) % 100 },
     h => sub { '%b' },
     k => sub { sprintf '%2d', $_[2] },
     l => sub { sprintf '%2d', $_[2] % 12 + ($_[2] % 12 == 0 ? 12 : 0) },
