@@ -1,3 +1,5 @@
+#!/usr/bin/perl -c
+
 package POSIX::strftime::GNU::Util;
 
 =head1 NAME
