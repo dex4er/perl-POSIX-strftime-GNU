@@ -28,6 +28,7 @@ use POSIX::strftime::GNU::Util;
 
 use Carp ();
 use POSIX ();
+use Time::Local ();
 
 my %format = (
     C => sub { 19 + int $_[5] / 100 },
@@ -43,7 +44,7 @@ my %format = (
     P => sub { lc POSIX::strftime::GNU::Util::strftime('%p', @_) },
     r => sub { '%I:%M:%S %p' },
     R => sub { '%H:%M' },
-    s => sub { POSIX::mktime(@_) },
+    s => sub { Time::Local::timegm(@_) },
     t => sub { "\t" },
     T => sub { '%H:%M:%S' },
     u => sub { my $dw = POSIX::strftime::GNU::Util::strftime('%w', @_); $dw += ($dw == 0 ? 7 : 0); $dw },

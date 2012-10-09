@@ -8,7 +8,7 @@ use File::Spec;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More tests => 59;
+use Test::More tests => 57;
 
 BEGIN { use_ok 'POSIX::strftime::GNU::PP'; }
 
@@ -22,12 +22,10 @@ my %format = (
     A  => 'Sunday',
     b  => 'Jul',
     B  => 'July',
-    c  => 'Sun Jul  6 21:03:54 2008',
     C  => '20',
     d  => '06',
     D  => '07/06/08',
     e  => ' 6',
-    Ec => 'Sun Jul  6 21:03:54 2008',
     EC => '20',
     Ex => '07/06/08',
     EX => '21:03:54',
@@ -78,7 +76,7 @@ my %format = (
     Z  => 'GMT',
 );
 
-my @t = localtime POSIX::mktime(54, 3, 21, 6, 6, 108);
+my @t = gmtime 1215378234;
 
 foreach my $f (sort keys %format) {
     is strftime("%$f", @t), $format{$f}, "%$f";

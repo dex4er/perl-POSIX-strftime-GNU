@@ -65,6 +65,8 @@
 ^MYMETA\.json$
 
 # Avoid compiler artefacts
+\bcompilet_def\.old$
+\.exe$
 \.o$
 
 # Others

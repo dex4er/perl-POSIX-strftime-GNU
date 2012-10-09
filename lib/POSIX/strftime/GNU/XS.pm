@@ -33,16 +33,18 @@ use POSIX ();
 require XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);
 
-if ($Config{d_tm_tm_zone}) {
-    *strftime = *xs_strftime;
-}
-else {
-    require POSIX::strftime::GNU::PP;
+my %format = (
+    $^O eq 'MSWin32' ? (h => sub { '%b' }) : (),
+    $^O eq 'MSWin32' ? (r => sub { '%I:%M:%S %p' }) : (),
+    $^O eq 'MSWin32' ? (s => sub { Time::Local::timegm(@_) }) : (),
+    z => \&POSIX::strftime::GNU::Util::tzoffset,
+    Z => \&POSIX::strftime::GNU::Util::tzname,
+);
 
-    my %format = (
-        z => \&POSIX::strftime::GNU::Util::tzoffset,
-        Z => \&POSIX::strftime::GNU::Util::tzname,
-    );
+my $formats = join '', sort keys %format;
+
+if ($^O eq 'MSWin32' or not $Config{d_tm_tm_zone}) {
+    require POSIX::strftime::GNU::PP;
 
     *strftime = sub {
         my ($fmt, @t) = @_;
@@ -50,10 +52,17 @@ else {
         Carp::croak 'Usage: POSIX::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
             unless @t >= 6 and @t <= 9;
 
-        $fmt =~ s/%([zZ])/$format{$1}->(@t)/ge;
+        if ($^O eq 'MSWin32') {
+            $fmt =~ s/%E([CcXxYy])/%$1/;
+            $fmt =~ s/%O([deHIMmSUuVWwy])/%$1/;
+        };
+        $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
 
         return xs_strftime($fmt, @t);
     };
+}
+else {
+    *strftime = *xs_strftime;
 };
 
 1;

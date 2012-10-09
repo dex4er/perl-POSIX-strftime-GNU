@@ -42,6 +42,8 @@ from UTC).
 sub tzoffset {
     my @t = @_;
 
+    return '+0000' if exists $ENV{TZ} and $ENV{TZ} eq 'GMT';
+
     my $s = Time::Local::timegm(@t) - Time::Local::timelocal(@t);
 
     return sprintf '%+03d%02u', int($s/3600), $s % 3600;
