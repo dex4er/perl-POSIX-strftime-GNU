@@ -16,6 +16,7 @@ my $module = 'POSIX::strftime::GNU';
 (my $dist = $module) =~ s/::/-/g;
 
 my $cflags = '-Wall -g';
+$cflags .= ' -DHAVE_MKTIME'    if $Config{d_mktime};
 $cflags .= ' -DHAVE_TM_GMTOFF' if $Config{d_tm_tm_gmtoff};
 $cflags .= ' -DHAVE_TM_ZONE'   if $Config{d_tm_tm_zone};
 $cflags .= ' -DHAVE_TZNAME'    if $Config{d_tzname};
@@ -35,7 +36,7 @@ my $build = Module::Build::My->new(
         'Test::More'            => 0,
     },
     get_options             => {
-        pp => {},
+        pp                      => {},
     },
     pm_files                => {
         'lib/POSIX/strftime/GNU.pm' => 'lib/POSIX/strftime/GNU.pm',
