@@ -2,10 +2,10 @@
 
 use lib 'blib/arch', 'blib/lib', '../blib/arch', '../blib/lib';
 
-use POSIX qw(locale_h);
+use POSIX ();
 use POSIX::strftime::GNU::PP;
 
-setlocale(LC_TIME, 'C');
+POSIX::setlocale(&POSIX::LC_TIME, 'C');
 
 
 our %tests = (
@@ -38,7 +38,7 @@ our %tests = (
 );
 
 
-use Benchmark ':all';
+use Benchmark ();
 
-my $result = timethese($ARGV[0] || -1, { %tests });
-cmpthese($result);
+my $result = Benchmark::timethese($ARGV[0] || -1, { %tests });
+Benchmark::cmpthese($result);
