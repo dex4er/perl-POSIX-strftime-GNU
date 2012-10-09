@@ -58,7 +58,7 @@ my $formats = join '', sort keys %format;
 sub strftime ($@) {
     my ($fmt, @t) = @_;
 
-    Carp::croak 'Usage: POSIX::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
+    Carp::croak 'Usage: POSIX::strftime::GNU::PP::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
         unless @t >= 6 and @t <= 9;
 
     $fmt =~ s/%E([CcXxYy])/%$1/;

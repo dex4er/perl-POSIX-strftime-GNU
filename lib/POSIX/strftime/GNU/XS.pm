@@ -44,12 +44,10 @@ my %format = (
 my $formats = join '', sort keys %format;
 
 if ($^O eq 'MSWin32' or not $Config{d_tm_tm_zone}) {
-    require POSIX::strftime::GNU::PP;
-
     *strftime = sub {
         my ($fmt, @t) = @_;
 
-        Carp::croak 'Usage: POSIX::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
+        Carp::croak 'Usage: POSIX::strftime::GNU::XS::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
             unless @t >= 6 and @t <= 9;
 
         if ($^O eq 'MSWin32') {
