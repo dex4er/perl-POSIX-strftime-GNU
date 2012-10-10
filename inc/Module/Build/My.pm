@@ -59,6 +59,35 @@ int main () {
 }
 EOF
 
+    foreach my $m (qw( E O 1 )) {
+        $chk->try_compile_run(
+            define => "HAVE_STRFTIME_${m}_MODIFIER 1",
+            source => << "EOF" );
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int
+main()
+{
+    char outstr[200];
+    time_t t;
+    struct tm *tmp;
+
+    t = time(NULL);
+    tmp = localtime(&t);
+    if (tmp == NULL)
+        exit(1);
+    if (strftime(outstr, sizeof(outstr), "%${m}y", tmp) == 0)
+        exit(1);
+    if (strncmp(outstr, "%${m}y", 4) == 0 || strncmp(outstr, "y", 4) == 0)
+        exit(1);
+    return 0;
+}
+EOF
+    };
+
     return 1;
 };
 

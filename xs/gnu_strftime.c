@@ -739,7 +739,7 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
           cpy (am_len, a_month);
           break;
 #else
-          goto underlying_strftime;
+          format_char = L_('b');
 #endif
 
         case L_('B'):
@@ -805,8 +805,14 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                output.  */
             *u++ = ' ';
             *u++ = '%';
-            if (modifier != 0)
+# ifdef HAVE_STRFTIME_E_MODIFIER
+            if (modifier == L_('E'))
               *u++ = modifier;
+# endif
+# ifdef HAVE_STRFTIME_O_MODIFIER
+            if (modifier == L_('O'))
+              *u++ = modifier;
+# endif
             *u++ = format_char;
             *u = '\0';
             len = strftime (ubuf, sizeof ubuf, ufmt, tp);
@@ -834,8 +840,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
 # endif
                   break;
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
 
@@ -920,8 +924,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                       break;
                     }
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
 
@@ -1096,11 +1098,9 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
           if (*(subfmt = (const CHAR_T *) _NL_CURRENT (LC_TIME,
                                                        NLW(T_FMT_AMPM)))
               == L_('\0'))
+#endif
             subfmt = L_("%I:%M:%S %p");
           goto subformat;
-#else
-          goto underlying_strftime;
-#endif
 
         case L_('S'):
           if (modifier == L_('E'))
@@ -1249,8 +1249,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
 # endif
                   goto subformat;
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
           if (modifier == L_('O'))
@@ -1270,8 +1268,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                   DO_NUMBER (1, (era->offset
                                  + delta * era->absolute_direction));
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
 

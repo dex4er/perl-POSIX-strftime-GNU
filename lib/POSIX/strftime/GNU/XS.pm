@@ -55,25 +55,8 @@ This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
 =cut
 
-if ($^O eq 'MSWin32' or not $Config{d_tm_tm_zone}) {
-    *strftime = sub {
-        my ($fmt, @t) = @_;
+*strftime = *xs_strftime;
 
-        Carp::croak 'Usage: POSIX::strftime::GNU::XS::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
-            unless @t >= 6 and @t <= 9;
-
-        if ($^O eq 'MSWin32') {
-            $fmt =~ s/%E([CcXxYy])/%$1/;
-            $fmt =~ s/%O([deHIMmSUuVWwy])/%$1/;
-        };
-        $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
-
-        return xs_strftime($fmt, @t);
-    };
-}
-else {
-    *strftime = *xs_strftime;
-};
 
 1;
 
