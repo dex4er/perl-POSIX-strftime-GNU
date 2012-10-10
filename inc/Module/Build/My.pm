@@ -14,11 +14,11 @@ my $cc = ExtUtils::CBuilder->new;
 
 my %objs;
 
-sub ACTION_config_gnulib {
+sub ACTION_xs_config {
     my $self = shift;
     return if $self->args('pp');
 
-    my $config_h = 'xs/config.h';
+    my $config_h = 'xs/xs_config.h';
     $self->add_to_cleanup($config_h);
 
     require ExtUtils::CChecker;
@@ -26,11 +26,6 @@ sub ACTION_config_gnulib {
     my $chk = ExtUtils::CChecker->new(
         defines_to => $config_h,
     );
-
-    foreach my $func (qw( localtime_r gmtime_r )) {
-        $chk->define(sprintf 'HAVE_%s', uc($func))
-            if $Config{"d_$func"};
-    };
 
     foreach my $kw (qw( __restrict __restrict__ _Restrict restrict )) {
         last if $chk->try_compile_run(
@@ -53,7 +48,7 @@ EOF
     }
 
     $chk->try_compile_run(
-        define => "HAVE_DECL_TZNAME 1",
+        define => 'HAVE_DECL_TZNAME 1',
         source => << "EOF" );
 #include <time.h>
 int main () {
@@ -71,7 +66,7 @@ sub ACTION_gnulib {
     my $self = shift;
     return if $self->args('pp');
 
-    $self->depends_on("config_gnulib");
+    $self->depends_on('xs_config');
 
     if (my $o = $cc->object_file(my $c = 'xs/time_r.c')) {
         $self->add_to_cleanup($o);
@@ -92,7 +87,7 @@ sub ACTION_gnulib {
 
 sub ACTION_code {
     my $self = shift;
-    $self->depends_on("gnulib");
+    $self->depends_on('gnulib');
     $self->extra_linker_flags(keys %objs);
     return $self->SUPER::ACTION_code(@_);
 };

@@ -17,7 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
-#include "config.h"
+#include "gnu_config.h"
 #include "gnu_strftime.h"
 #include "time_r.h"
 

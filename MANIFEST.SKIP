@@ -72,4 +72,4 @@
 # Others
 ^lib/.*\.xs$
 ^lib/.*\.c$
-^xs/config.h$
+^xs/xs_config.h$

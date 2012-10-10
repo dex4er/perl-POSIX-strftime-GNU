@@ -17,8 +17,7 @@
 
 /* Written by Paul Eggert.  */
 
-#include "config.h"
-#include <time.h>
+#include "time_r.h"
 
 static struct tm *
 copy_tm_result (struct tm *dest, struct tm const *src)
