@@ -89,9 +89,9 @@ sub import {
 
 =head1 BUGS
 
-XS extension does implement all character sequences in C code, yet, especially
-C<%z> and C<%Z> and requires some Perl code for its job. It means that it is
-as slow on Microsoft Windows as PP extension.
+XS extension does not implement all character sequences in C code, yet,
+especially C<%z> and C<%Z> and requires some Perl code for its job. It means
+that it is as slow on Microsoft Windows as PP extension.
 
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/perl-POSIX-strftime-GNU/issues>
