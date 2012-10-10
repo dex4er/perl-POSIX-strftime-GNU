@@ -21,6 +21,8 @@
 extern "C" {
 #endif
 
+size_t gnu_strftime (char *, size_t, const char *, const struct tm *);
+
 /* Just like strftime, but with two more arguments:
    POSIX requires that strftime use the local timezone information.
    When __UTC is nonzero and tm->tm_zone is NULL or the empty string,

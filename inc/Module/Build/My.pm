@@ -18,7 +18,7 @@ sub ACTION_config_gnulib {
     my $self = shift;
     return if $self->args('pp');
 
-    my $config_h = 'gnulib/config.h';
+    my $config_h = 'xs/config.h';
     $self->add_to_cleanup($config_h);
 
     require ExtUtils::CChecker;
@@ -64,8 +64,6 @@ int main () {
 }
 EOF
 
-    $chk->define('my_strftime gnu_strftime');
-
     return 1;
 };
 
@@ -75,16 +73,16 @@ sub ACTION_gnulib {
 
     $self->depends_on("config_gnulib");
 
-    if (my $o = $cc->object_file(my $c = 'gnulib/lib/time_r.c')) {
+    if (my $o = $cc->object_file(my $c = 'xs/time_r.c')) {
         $self->add_to_cleanup($o);
-        $cc->compile(source => $c, object_file => $o, include_dirs => [qw( gnulib gnulib/lib )], extra_compiler_flags => $self->extra_compiler_flags)
+        $cc->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
         $objs{$o} = $o;
     }
 
-    if (my $o = $cc->object_file(my $c = 'gnulib/strftime.c')) {
+    if (my $o = $cc->object_file(my $c = 'xs/gnu_strftime.c')) {
         $self->add_to_cleanup($o);
-        $cc->compile(source => $c, object_file => $o, include_dirs => [qw( gnulib gnulib/lib )], extra_compiler_flags => $self->extra_compiler_flags)
+        $cc->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
         $objs{$o} = $o;
     }

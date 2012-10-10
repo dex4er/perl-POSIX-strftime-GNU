@@ -13,8 +13,7 @@
 #define NEED_sv_2pv_flags
 #include "ppport.h"
 
-
-size_t gnu_strftime (char *s, size_t maxsize, const char *format, const struct tm *tp);
+#include "gnu_strftime.h"
 
 
 /*    Based on util.c

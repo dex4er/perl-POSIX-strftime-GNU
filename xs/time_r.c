@@ -17,8 +17,7 @@
 
 /* Written by Paul Eggert.  */
 
-#include <config.h>
-
+#include "config.h"
 #include <time.h>
 
 static struct tm *

@@ -16,25 +16,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include "time_r.h"
 
-#ifdef _LIBC
-# define HAVE_STRUCT_ERA_ENTRY 1
-# define HAVE_TM_GMTOFF 1
-# define HAVE_TM_ZONE 1
-# define HAVE_TZNAME 1
-# define HAVE_TZSET 1
-# include "../locale/localeinfo.h"
-#else
-# include <config.h>
-# if FPRINTFTIME
-#  include "ignore-value.h"
-#  include "fprintftime.h"
-# else
-#  include "strftime.h"
-# endif
-#endif
+#include "config.h"
+#include "gnu_strftime.h"
+#include "time_r.h"
 
 #include <ctype.h>
 #include <time.h>
@@ -410,7 +395,7 @@ iso_week_days (int yday, int wday)
 #  define my_strftime wcsftime
 #  define nl_get_alt_digit _nl_get_walt_digit
 # else
-#  define my_strftime strftime
+#  define my_strftime gnu_strftime
 #  define nl_get_alt_digit _nl_get_alt_digit
 # endif
 # define extra_args

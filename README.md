@@ -38,9 +38,9 @@ This is replacement for [POSIX::strftime](http://search.cpan.org/perldoc?POSIX#s
 
 # BUGS
 
-XS extension does implement all character sequences in C code, yet, especially
-`%z` and `%Z` and requires some Perl code for its job. It means that it is
-as slow on Microsoft Windows as PP extension.
+XS extension does not implement all character sequences in C code, yet,
+especially `%z` and `%Z` and requires some Perl code for its job. It means
+that it is as slow on Microsoft Windows as PP extension.
 
 If you find the bug or want to implement new features, please report it at
 [https://github.com/dex4er/perl-POSIX-strftime-GNU/issues](https://github.com/dex4er/perl-POSIX-strftime-GNU/issues)
