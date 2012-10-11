@@ -7,7 +7,8 @@ BEGIN {
     # Windows can't change timezone inside Perl script
     if (($ENV{TZ}||'') ne 'GMT') {
         $ENV{TZ} = 'GMT';
-        exec $^X, $0;
+        $SIG{CHLD} = 'IGNORE';
+        return if fork;
     };
 }
 
@@ -17,7 +18,7 @@ use Time::Local;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More tests => 57;
+use Test::More tests => 61;
 
 BEGIN { use_ok 'POSIX::strftime::GNU::PP'; }
 
@@ -81,7 +82,11 @@ my %format = (
     y  => '08',
     Y  => '2008',
     z  => '+0000',
+    ':z' => '+00:00',
+    '::z' => '+00:00:00',
+    ':::z' => '+00',
     Z  => 'GMT',
+    '%' => '%',
 );
 
 my @t = localtime timelocal(54, 3, 21, 6, 6, 108);

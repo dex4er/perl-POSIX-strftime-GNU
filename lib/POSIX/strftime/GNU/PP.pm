@@ -40,13 +40,35 @@ from UTC).
 =cut
 
 sub tzoffset {
-    my @t = @_;
+    my ($colons, @t) = @_;
 
-    return '+0000' if exists $ENV{TZ} and $ENV{TZ} eq 'GMT';
+    my $diff = (exists $ENV{TZ} and $ENV{TZ} eq 'GMT')
+             ? 0
+             : Time::Local::timegm(@t) - Time::Local::timelocal(@t);
 
-    my $s = Time::Local::timegm(@t) - Time::Local::timelocal(@t);
+    my $h = $diff / 60 / 60;
+    my $m = $diff / 60 % 60;
+    my $s = $diff % 60;
 
-    return sprintf '%+03d%02u', int($s/3600), $s % 3600;
+    my $fmt = do {
+        if ($colons == 0) {
+            '%+03d%02u';
+        }
+        elsif ($colons == 1) {
+            '%+03d:%02u';
+        }
+        elsif ($colons == 2) {
+            '%+03d:%02u:%02u';
+        }
+        elsif ($colons == 3) {
+            $m ? '%+03d:%02u' : '%+03d';
+        }
+        else {
+            '%%' . ':' x $colons . 'z';
+        };
+    };
+
+    return sprintf $fmt, $h, $m, $s;
 };
 
 my %offset2zone_std = (
@@ -228,6 +250,7 @@ sub strftime ($@) {
 
     $fmt =~ s/%E([CcXxYy])/%$1/;
     $fmt =~ s/%O([deHIMmSUuVWwy])/%$1/;
+    $fmt =~ s/%(:{0,3})?(z)/$format{$2}->(length $1, @t)/ge;
     $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
 
     return strftime_orig($fmt, @t);
