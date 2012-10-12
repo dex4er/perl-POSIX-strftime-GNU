@@ -65,6 +65,7 @@ my $xs_loaded;
 if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
     $xs_loaded = eval {
         require POSIX::strftime::GNU::XS;
+        no warnings 'once';
         *strftime = *POSIX::strftime::GNU::XS::strftime;
         1;
     };
@@ -73,6 +74,7 @@ if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
 
 if (not $xs_loaded) {
     require POSIX::strftime::GNU::PP;
+    no warnings 'once';
     *strftime = *POSIX::strftime::GNU::PP::strftime;
 };
 

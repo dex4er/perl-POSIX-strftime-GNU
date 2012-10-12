@@ -55,6 +55,7 @@ This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
 =cut
 
+no warnings 'once';
 *strftime = *xs_strftime;
 
 
