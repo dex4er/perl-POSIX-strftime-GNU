@@ -149,21 +149,21 @@ sub tzname {
 
     return 'GMT' if exists $ENV{TZ} and $ENV{TZ} eq 'GMT';
 
-    my $off = tzoffset(3, @t);
+    my $diff = tzoffset(3, @t);
 
     my @t1 = my @t2 = @t;
     @t1[3,4] = (1, 1);
     @t2[3,4] = (1, 7);
 
-    my $off1 = tzoffset(3, @t1);
-    my $off2 = tzoffset(3, @t2);
+    my $diff1 = tzoffset(3, @t1);
+    my $diff2 = tzoffset(3, @t2);
 
     for (my $i=0; $i < @offset2zone; $i += 6) {
-        next unless $offset2zone[$i] eq $off1 and $offset2zone[$i+3] eq $off2;
-        return $off2 eq $off ? $offset2zone[$i+5] : $offset2zone[$i+2];
+        next unless $offset2zone[$i] eq $diff1 and $offset2zone[$i+3] eq $diff2;
+        return $diff2 eq $diff ? $offset2zone[$i+5] : $offset2zone[$i+2];
     }
 
-    if ($off =~ /^([+-])(\d\d)$/) {
+    if ($diff =~ /^([+-])(\d\d)$/) {
         return sprintf 'GMT%s%d', $1 eq '-' ? '+' : '-', $2;
     };
 
