@@ -49,7 +49,7 @@ my $build = Module::Build::My->new(
         'xs',
     ],
     auto_configure_requires => 0,
-    create_makefile_pl      => 'traditional',
+    create_makefile_pl      => 'small',
     create_readme           => 1,
     create_license          => 1,
     recursive_test_files    => 0,
