@@ -16,6 +16,7 @@ BEGIN {
     my $cwd = ${^TAINT} ? do { local $_=getcwd; /(.*)/; $1 } : '.';
     unshift @INC, File::Spec->catdir($cwd, 'inc');
     unshift @INC, File::Spec->catdir($cwd, 'lib');
+    unshift @INC, File::Spec->catdir($cwd, 'blib/arch');
 }
 
 use Test::Harness;

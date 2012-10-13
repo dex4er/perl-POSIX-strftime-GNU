@@ -92,5 +92,10 @@ my %format = (
 my @t = localtime timelocal(54, 3, 21, 6, 6, 108);
 
 foreach my $f (sort keys %format) {
-    is strftime("%$f", @t), $format{$f}, "%$f";
-}
+    if (ref $format{$f} eq 'Regexp') {
+        like strftime("%$f", @t), $format{$f}, "%$f";
+    }
+    else {
+        is strftime("%$f", @t), $format{$f}, "%$f";
+    };
+};
