@@ -24,24 +24,12 @@ use warnings;
 
 our $VERSION = '0.02';
 
-use POSIX::strftime::GNU::PP;
-
 use Carp ();
 use Config;
 use POSIX ();
 
 require XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);
-
-my %format = (
-    $^O eq 'MSWin32' ? (h => sub { '%b' }) : (),
-    $^O eq 'MSWin32' ? (r => sub { '%I:%M:%S %p' }) : (),
-    $^O eq 'MSWin32' ? (s => sub { Time::Local::timegm(@_) }) : (),
-    z => \&POSIX::strftime::GNU::PP::tzoffset,
-    Z => \&POSIX::strftime::GNU::PP::tzname,
-);
-
-my $formats = join '', sort keys %format;
 
 =head1 FUNCTIONS
 
