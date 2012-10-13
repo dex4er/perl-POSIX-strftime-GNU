@@ -5,6 +5,7 @@
 *.ppd
 *.tgz
 *.tmp
+.cproject
 .includepath
 .project
 .settings
@@ -19,9 +20,10 @@ MYMETA.json
 MYMETA.yml
 Makefile
 Makefile.PL
+Makefile.old
 _build
 blib
-compilet_def.old
+compilet.*
 cover_db
 nytprof
 nytprof.out

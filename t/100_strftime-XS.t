@@ -7,21 +7,22 @@ BEGIN {
     # Windows can't change timezone inside Perl script
     if (($ENV{TZ}||'') ne 'GMT') {
         $ENV{TZ} = 'GMT';
-        exec $^X, $0;
+        exec $^X, (map { "-I$_" } @INC), $0;
     };
 }
 
 use Carp ();
 use File::Spec;
+use POSIX ();
 use Time::Local;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More eval { require POSIX::strftime::GNU::XS } ? (tests => 56) : (skip_all => $@);
-
-*strftime = *POSIX::strftime::GNU::XS::strftime;
+use Test::More eval { require POSIX::strftime::GNU::XS } ? (tests => 60) : (skip_all => $@);
 
 POSIX::setlocale(&POSIX::LC_TIME, 'C');
+
+*strftime = \&POSIX::strftime::GNU::XS::strftime;
 
 my %format = (
     a  => 'Sun',

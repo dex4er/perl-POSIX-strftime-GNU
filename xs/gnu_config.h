@@ -24,4 +24,8 @@
 #define HAVE_TZNAME 1
 #endif
 
+#ifdef HAS_TZSET
+#define HAVE_TZSET 1
+#endif
+
 #endif
