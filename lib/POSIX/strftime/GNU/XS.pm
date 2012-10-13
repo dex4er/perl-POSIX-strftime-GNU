@@ -47,7 +47,7 @@ my $formats = join '', sort keys %format;
 
 =over
 
-=item $str = strftime (@time)
+=item $str = strftime ($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 

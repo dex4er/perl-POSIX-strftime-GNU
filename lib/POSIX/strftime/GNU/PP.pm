@@ -263,7 +263,7 @@ my %format = (
 
 my $formats = join '', sort keys %format;
 
-=item $str = strftime (@time)
+=item $str = strftime ($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
@@ -271,7 +271,7 @@ This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
 =cut
 
-sub strftime ($@) {
+sub strftime {
     my ($fmt, @t) = @_;
 
     Carp::croak 'Usage: POSIX::strftime::GNU::PP::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
@@ -279,6 +279,8 @@ sub strftime ($@) {
 
     $fmt =~ s/%E([CcXxYy])/%$1/;
     $fmt =~ s/%O([deHIMmSUuVWwy])/%$1/;
+    $fmt =~ s/%#([aAbBh])/uc(strftime("%$1", @t))/ge;
+    $fmt =~ s/%#([pZ])/lc(strftime("%$1", @t))/ge;
     $fmt =~ s/%(:{0,3})?(z)/$format{$2}->(length $1, @t)/ge;
     $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
 

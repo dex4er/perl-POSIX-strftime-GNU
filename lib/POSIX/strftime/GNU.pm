@@ -52,7 +52,7 @@ use POSIX ();
 
 =over
 
-=item $str = strftime (@time)
+=item $str = strftime ($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
@@ -324,6 +324,41 @@ For example, 1 January 2010 is a Friday, meaning that just three days of that
 calendar week fall in 2010. Thus, the ISO 8601 week- based system considers
 these days to be part of week 53 (C<%V>) of the year 2009 (C<%G>) ; week 01 of
 ISO 8601 year 2010 starts on Monday, 4 January 2010.
+
+Glibc provides some extensions for conversion specifications. (These
+extensions are not specified in POSIX.1-2001, but a few other systems provide
+similar features.) Between the C<%> character and the conversion specifier
+character, an optional flag and field width may be specified. (These precede
+the C<E> or C<O> modifiers, if present.)
+
+The following flag characters are permitted:
+
+=over
+
+=item _
+
+(underscore) Pad a numeric result string with spaces.
+
+=item -
+
+(dash) Do not pad a numeric result string.
+
+=item 0
+
+Pad a numeric result string with zeros even if the conversion specifier
+character uses space-padding by default.
+
+=item ^
+
+Convert alphabetic characters in result string to upper case.
+
+=item #
+
+Swap the case of the result string. (This flag only works with certain
+conversion specifier characters, and of these, it is only really useful with
+C<%Z>.)
+
+=back
 
 =for readme continue
 
