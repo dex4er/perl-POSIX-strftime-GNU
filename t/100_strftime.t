@@ -13,16 +13,16 @@ BEGIN {
 
 use Carp ();
 use File::Spec;
-use POSIX ();
 use Time::Local;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More eval { require POSIX::strftime::GNU::XS } ? (tests => 60) : (skip_all => $@);
+use Test::More tests => 62;
+
+BEGIN { use_ok 'POSIX::strftime::GNU'; }
+BEGIN { use_ok 'POSIX', qw( strftime ); }
 
 POSIX::setlocale(&POSIX::LC_TIME, 'C');
-
-*strftime = \&POSIX::strftime::GNU::XS::strftime;
 
 my %format = (
     a  => 'Sun',
