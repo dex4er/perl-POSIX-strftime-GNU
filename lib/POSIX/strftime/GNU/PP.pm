@@ -277,6 +277,49 @@ sub strftime {
     Carp::croak 'Usage: POSIX::strftime::GNU::PP::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
         unless @t >= 6 and @t <= 9;
 
+    my $strftime_modifier = sub {
+        my ($prefix, $modifier, $format, @t) = @_;
+        my $suffix = '';
+
+        no warnings 'uninitialized';
+        my $str = strftime("%$format", @t);
+
+        for (;;) {
+            if ($modifier eq '_' and $suffix !~ /0/ or $modifier eq '-' and $suffix !~ /0/ and $format =~ /[aAbBDFhnpPrRtTxXZ]$/) {
+                $str =~ s/^([+-])(0+)(\d:.*?|\d$)/' ' x length($2) . $1 . $3/ge;
+                $str =~ s/^(0+)(.+?)$/' ' x length($1) . $2/ge;
+            }
+            elsif ($modifier eq '-' and $suffix !~ /0/ and $format =~ /[CdgGHIjmMsSuUVwWyYz]$/) {
+                $str =~ s/^([+-])(0+)(\d:.*?|\d$)/$1$3/g;
+                $str =~ s/^(0+)(.+?)$/$2/g;
+            }
+            elsif ($modifier eq '-') {
+                $str =~ s/^ +//ge;
+            }
+            elsif ($modifier eq '0' and $suffix !~ /_/) {
+                $str =~ s/^( +)/'0' x length($1)/ge;
+            }
+            elsif ($modifier eq '^' and "$prefix$suffix" =~ /#/ and $format =~ /Z$/) {
+                $str = lc($str);
+            }
+            elsif ($modifier eq '^' and $format !~ /[pP]$/) {
+                $str = uc($str);
+            }
+            elsif ($modifier eq '#' and $format =~ /[aAbBh]$/) {
+                $str = uc($str);
+            }
+            elsif ($modifier eq '#' and $format =~ /[pZ]$/) {
+                $str = lc($str);
+            };
+
+            last unless $prefix =~ s/(.)$//;
+            $suffix = "$modifier$suffix";
+            $modifier = $1;
+        };
+
+        return $str;
+    };
+
     my $strftime_0z = sub {
         my ($digits, $format, @t) = @_;
         $digits --;
@@ -285,19 +328,26 @@ sub strftime {
         return $1 . sprintf "%0${digits}s", $2;
     };
 
-    $fmt =~ s/%\^([#]?[0-9]*[aAbBhr])/uc(strftime("%$1", @t))/ge;
-    $fmt =~ s/%(?:\^#|#\^)([0-9]*[pZ])/lc(strftime("%$1", @t))/ge;
-    $fmt =~ s/%\^([#]?:?[0-9]*[$formats])/%$1/g;
-    $fmt =~ s/%#([0-9]*[aAbBh])/uc(strftime("%$1", @t))/ge;
-    $fmt =~ s/%#([0-9]*[pZ])/lc(strftime("%$1", @t))/ge;
-    $fmt =~ s/%#([0-9]*:?[$formats])/%$1/g;
-    $fmt =~ s/%([0-9]+)[EO]?([aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
-    $fmt =~ s/%([0-9]+)[EO]?([CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
-    $fmt =~ s/%([0-9]+)(:*z)/$strftime_0z->($1, "%$2", @t)/ge;
+    my @mod;
+
+    # recursively handle modifiers
+    $fmt =~ s/%([_0\^#-]*)([_0\^#-])((?:[1-9][0-9]*)?:*[EO]?[a-zA-Z])/$strftime_modifier->($1, $2, $3, @t)/ge;
+
+    # numbers before character
+    $fmt =~ s/%([1-9][0-9]*)([EO]?[aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%([1-9][0-9]*)(:*[z])/$strftime_0z->($1, "%$2", @t)/ge;
+    $fmt =~ s/%([1-9][0-9]*)([EO]?[CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
+
+    # "E", "O", ":" modifiers
     $fmt =~ s/%E([CcXxYy])/%$1/;
     $fmt =~ s/%O([deHIMmSUuVWwy])/%$1/;
-    $fmt =~ s/%[\^#]?(:{0,3})?(z)/$format{$2}->(length $1, @t)/ge;
+    $fmt =~ s/%(:{0,3})?(z)/$format{$2}->(length $1, @t)/ge;
+
+    # supported by Pure Perl
     $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
+
+    # as-is if there is some modifiers left
+    $fmt =~ s/%([_0\^#-]+(?:[1-9][0-9]*)?|[_0\^#-]?(?:[1-9][0-9]*))([a-zA-Z])/%%$1$2/;
 
     return strftime_orig($fmt, @t);
 };
