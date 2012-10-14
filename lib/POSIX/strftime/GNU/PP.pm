@@ -285,14 +285,18 @@ sub strftime {
         return $1 . sprintf "%0${digits}s", $2;
     };
 
+    $fmt =~ s/%\^([#]?[0-9]*[aAbBhr])/uc(strftime("%$1", @t))/ge;
+    $fmt =~ s/%(?:\^#|#\^)([0-9]*[pZ])/lc(strftime("%$1", @t))/ge;
+    $fmt =~ s/%\^([#]?:?[0-9]*[$formats])/%$1/g;
     $fmt =~ s/%#([0-9]*[aAbBh])/uc(strftime("%$1", @t))/ge;
     $fmt =~ s/%#([0-9]*[pZ])/lc(strftime("%$1", @t))/ge;
-    $fmt =~ s/%([0-9]+)([aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
-    $fmt =~ s/%([0-9]+)([CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%#([0-9]*:?[$formats])/%$1/g;
+    $fmt =~ s/%([0-9]+)[EO]?([aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%([0-9]+)[EO]?([CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
     $fmt =~ s/%([0-9]+)(:*z)/$strftime_0z->($1, "%$2", @t)/ge;
     $fmt =~ s/%E([CcXxYy])/%$1/;
     $fmt =~ s/%O([deHIMmSUuVWwy])/%$1/;
-    $fmt =~ s/%(:{0,3})?(z)/$format{$2}->(length $1, @t)/ge;
+    $fmt =~ s/%[\^#]?(:{0,3})?(z)/$format{$2}->(length $1, @t)/ge;
     $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
 
     return strftime_orig($fmt, @t);

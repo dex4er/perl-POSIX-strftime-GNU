@@ -17,7 +17,7 @@ use Time::Local;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More tests => 114;
+use Test::More tests => 140;
 
 BEGIN { use_ok 'POSIX::strftime::GNU'; }
 BEGIN { use_ok 'POSIX', qw( strftime ); }
@@ -26,19 +26,30 @@ POSIX::setlocale(&POSIX::LC_TIME, 'C');
 
 my %format = (
     a      => 'Sun',
+    '^a'   => 'SUN',
+    '^#a'  => 'SUN',
     '#a'   => 'SUN',
+    '#^a'  => 'SUN',
     '12a'  => '         Sun',
     '#12a' => '         SUN',
+    '^#12a' => '         SUN',
     A      => 'Sunday',
+    '^A'   => 'SUNDAY',
     '#A'   => 'SUNDAY',
     '12A'  => '      Sunday',
     b      => 'Jul',
-    '12b'  => '         Jul',
+    '^b'   => 'JUL',
     '#b'   => 'JUL',
+    '12b'  => '         Jul',
     B      => 'July',
+    '^B'   => 'JULY',
     '#B'   => 'JULY',
     '12B'  => '        July',
     C      => '20',
+    '^C'   => '20',
+    '^#C'  => '20',
+    '#C'   => '20',
+    '#^C'  => '20',
     '12C'  => '000000000020',
     d      => '06',
     '12d'  => '000000000006',
@@ -60,6 +71,7 @@ my %format = (
     '12g'  => '000000000008',
     h      => 'Jul',
     '12h'  => '         Jul',
+    '^h'   => 'JUL',
     '#h'   => 'JUL',
     H      => '21',
     '12H'  => '000000000021',
@@ -91,12 +103,19 @@ my %format = (
     Ow     => '0',
     Oy     => '08',
     p      => 'PM',
+    '^p'   => 'PM',
+    '^#p'  => 'pm',
     '#p'   => 'pm',
+    '#^p'  => 'pm',
     '12p'  => '          PM',
     P      => 'pm',
+    '^P'   => 'pm',
+    '#P'   => 'pm',
     '12P'  => '          pm',
     r      => '09:03:54 PM',
     '12r'  => ' 09:03:54 PM',
+    '^r'   => '09:03:54 PM',
+    '#r'   => '09:03:54 PM',
     R      => '21:03',
     '12R'  => '       21:03',
     s      => '1215378234',
@@ -105,6 +124,7 @@ my %format = (
     '12S'  => '000000000054',
     t      => "\t",
     '12t'  => "           \t",
+    '012t' => "00000000000\t",
     T      => '21:03:54',
     '12T'  => '    21:03:54',
     u      => '7',
@@ -129,13 +149,19 @@ my %format = (
     ':z'   => '+00:00',
     '::z'  => '+00:00:00',
     ':::z' => '+00',
+    '^#:z' => '+00:00',
+    '012z' => '+00000000000',
     '12z'  => '+00000000000',
     '12:z' => '+00000000:00',
     '12::z' => '+00000:00:00',
     '12:::z' => '+00000000000',
     Z      => qr/^(GMT|UTC)$/,
+    '^Z'   => qr/^(GMT|UTC)$/,
+    '^#Z'  => qr/^(gmt|utc)$/,
     '#Z'   => qr/^(gmt|utc)$/,
-    '12Z'   => qr/^ {9}(GMT|UTC)$/,
+    '#^Z'  => qr/^(gmt|utc)$/,
+    '012Z' => qr/^0{9}(GMT|UTC)$/,
+    '12Z'  => qr/^ {9}(GMT|UTC)$/,
     '%'    => '%',
 );
 
@@ -146,6 +172,6 @@ foreach my $f (sort keys %format) {
         like strftime("%$f", @t), $format{$f}, "%$f";
     }
     else {
-        is strftime("%$f", @t), $format{$f}, "%$f";
+        is   strftime("%$f", @t), $format{$f}, "%$f";
     };
 };
