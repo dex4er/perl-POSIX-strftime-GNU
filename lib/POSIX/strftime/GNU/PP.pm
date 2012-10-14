@@ -28,18 +28,12 @@ use Carp ();
 use POSIX ();
 use Time::Local ();
 
-=head1 FUNCTIONS
+# $str = tzoffset (@time)
+#
+# Returns the C<+hhmm> or C<-hhmm> numeric timezone (the hour and minute offset
+# from UTC).
 
-=over
-
-=item $str = tzoffset (@time)
-
-Returns the C<+hhmm> or C<-hhmm> numeric timezone (the hour and minute offset
-from UTC).
-
-=cut
-
-sub tzoffset {
+my $tzoffset = sub {
     my ($colons, @t) = @_;
 
     my $diff = (exists $ENV{TZ} and $ENV{TZ} eq 'GMT')
@@ -138,25 +132,23 @@ my @offset2zone = qw(
     +14       1 WSDT    +13       0 WST
 );
 
-=item $str = tzname (@time)
+# $str = tzname (@time)
+#
+# Returns the abbreviation of the time zone (e.g. "UTC" or "CEST").
 
-Returns the abbreviation of the time zone (e.g. "UTC" or "CEST").
-
-=cut
-
-sub tzname {
+my $tzname = sub {
     my @t = @_;
 
     return 'GMT' if exists $ENV{TZ} and $ENV{TZ} eq 'GMT';
 
-    my $diff = tzoffset(3, @t);
+    my $diff = $tzoffset->(3, @t);
 
     my @t1 = my @t2 = @t;
     @t1[3,4] = (1, 1);
     @t2[3,4] = (1, 7);
 
-    my $diff1 = tzoffset(3, @t1);
-    my $diff2 = tzoffset(3, @t2);
+    my $diff1 = $tzoffset->(3, @t1);
+    my $diff2 = $tzoffset->(3, @t2);
 
     for (my $i=0; $i < @offset2zone; $i += 6) {
         next unless $offset2zone[$i] eq $diff1 and $offset2zone[$i+3] eq $diff2;
@@ -170,14 +162,12 @@ sub tzname {
     return 'Etc';
 };
 
-=item $num = isoweeknum (@time)
+# $num = isoweeknum (@time)
+#
+# Returns the number of the week based on ISO-8601 standard. See
+# L<http://en.wikipedia.org/wiki/ISO_8601> for details.
 
-Returns the number of the week based on ISO-8601 standard. See
-L<http://en.wikipedia.org/wiki/ISO_8601> for details.
-
-=cut
-
-sub isoweeknum {
+my $isoweeknum = sub {
     my @t = @_;
 
     CALC:
@@ -208,27 +198,29 @@ sub isoweeknum {
     return sprintf('%02d', $isonumber);
 };
 
-=item $num = isoyearnum (@time)
+# $num = isoyearnum (@time)
+#
+# Returns the number of the year based on ISO-8601 standard. See
+# L<http://en.wikipedia.org/wiki/ISO_8601> for details.
 
-Returns the number of the year based on ISO-8601 standard. See
-L<http://en.wikipedia.org/wiki/ISO_8601> for details.
-
-=cut
-
-sub isoyearnum {
+my $isoyearnum = sub {
     my @t = @_;
 
     my $year = $t[5] + 1900;
 
-    if ($t[4] == 0 and isoweeknum(@t) > 5) {
+    if ($t[4] == 0 and $isoweeknum->(@t) > 5) {
         $year--;
     }
-    elsif ($t[4] == 11 and isoweeknum(@t) < 50) {
+    elsif ($t[4] == 11 and $isoweeknum->(@t) < 50) {
         $year++;
     };
 
     return $year;
 };
+
+=head1 FUNCTIONS
+
+=over
 
 =item $str = strftime_orig (@time)
 
@@ -243,8 +235,8 @@ my %format = (
     D => sub { '%m/%d/%y' },
     e => sub { sprintf '%2d', $_[3] },
     F => sub { '%Y-%m-%d' },
-    G => \&isoyearnum,
-    g => sub { sprintf '%02d', isoyearnum(@_) % 100 },
+    G => $isoyearnum,
+    g => sub { sprintf '%02d', $isoyearnum->(@_) % 100 },
     h => sub { '%b' },
     k => sub { sprintf '%2d', $_[2] },
     l => sub { sprintf '%2d', $_[2] % 12 + ($_[2] % 12 == 0 ? 12 : 0) },
@@ -256,9 +248,9 @@ my %format = (
     t => sub { "\t" },
     T => sub { '%H:%M:%S' },
     u => sub { my $dw = strftime_orig('%w', @_); $dw += ($dw == 0 ? 7 : 0); $dw },
-    V => \&isoweeknum,
-    z => \&tzoffset,
-    Z => \&tzname,
+    V => $isoweeknum,
+    z => $tzoffset,
+    Z => $tzname,
 );
 
 my $formats = join '', sort keys %format;
