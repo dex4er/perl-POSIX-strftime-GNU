@@ -284,6 +284,7 @@ my %format = (
     V => $isoweeknum,
     z => $tzoffset,
     Z => $tzname,
+    '%' => sub { '%%' },
 );
 
 my $formats = join '', sort keys %format;
@@ -354,12 +355,14 @@ sub strftime {
     };
 
     # recursively handle modifiers
-    $fmt =~ s/%([_0\^#-]*)([_0\^#-])((?:[1-9][0-9]*)?:*[EO]?[a-zA-Z%])/$strftime_modifier->($1, $2, $3, @t)/ge;
+    $fmt =~ s/%([_0\^#-]*)([_0\^#-])((?:[1-9][0-9]*)?:*[EO]?[a-zA-Z])/$strftime_modifier->($1, $2, $3, @t)/ge;
+    $fmt =~ s/%([_0\^#-]*)([_0\^#-])((?:[1-9][0-9]*)?[%])/$strftime_modifier->($1, $2, $3, @t) . '%'/ge;
 
     # numbers before character
-    $fmt =~ s/%([1-9][0-9]*)([EO]?[aAbBDeFhklnpPrRtTxXZ%])/sprintf("%$1s", strftime("%$2", @t))/ge;
-    $fmt =~ s/%([1-9][0-9]*)(:*[z])/$strftime_0z->($1, "%$2", @t)/ge;
+    $fmt =~ s/%([1-9][0-9]*)([EO]?[aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%([1-9][0-9]*)([%])/sprintf("%$1s%%", '%')/ge;
     $fmt =~ s/%([1-9][0-9]*)([EO]?[CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%([1-9][0-9]*)(:*[z])/$strftime_0z->($1, "%$2", @t)/ge;
 
     # "E", "O", ":" modifiers
     $fmt =~ s/%E([CcXxYy])/%$1/;
