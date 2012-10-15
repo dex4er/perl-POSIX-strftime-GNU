@@ -15,11 +15,13 @@ my $module = 'POSIX::strftime::GNU';
 
 (my $dist = $module) =~ s/::/-/g;
 
-my $cflags = '-Wall -g';
+my $cflags = $ENV{CFLAGS} || '';
 $cflags .= ' -DHAVE_MKTIME'    if $Config{d_mktime};
 $cflags .= ' -DHAVE_TM_GMTOFF' if $Config{d_tm_tm_gmtoff};
 $cflags .= ' -DHAVE_TM_ZONE'   if $Config{d_tm_tm_zone};
 $cflags .= ' -DHAVE_TZNAME'    if $Config{d_tzname};
+
+my $ldflags = $ENV{LDFLAGS} || '';
 
 my $build = Module::Build::My->new(
     module_name             => $module,
@@ -45,6 +47,7 @@ my $build = Module::Build::My->new(
     xs_files                => {
     },
     extra_compiler_flags    => $cflags,
+    extra_linker_flags      => $ldflags,
     include_dirs            => [
         'xs',
     ],

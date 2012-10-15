@@ -101,14 +101,14 @@ sub ACTION_gnulib {
         $self->add_to_cleanup($o);
         $cc->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
-        $objs{$o} = $o;
+        push @{$self->{properties}{objects}}, $o;
     }
 
     if (my $o = $cc->object_file(my $c = 'xs/gnu_strftime.c')) {
         $self->add_to_cleanup($o);
         $cc->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
-        $objs{$o} = $o;
+        push @{$self->{properties}{objects}}, $o;
     }
 
     return 1;
@@ -117,7 +117,6 @@ sub ACTION_gnulib {
 sub ACTION_code {
     my $self = shift;
     $self->depends_on('gnulib');
-    $self->extra_linker_flags(keys %objs);
     return $self->SUPER::ACTION_code(@_);
 };
 
