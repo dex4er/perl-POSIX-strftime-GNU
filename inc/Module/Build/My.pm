@@ -120,4 +120,24 @@ sub ACTION_code {
     return $self->SUPER::ACTION_code(@_);
 };
 
+sub ACTION_test_pp {
+    my $self = shift;
+    $self->log_info("Testing PP\n");
+    $ENV{PERL_POSIX_STRFTIME_GNU_PP} = 1;
+    return $self->SUPER::ACTION_test(@_);
+};
+
+sub ACTION_test_xs {
+    my $self = shift;
+    $self->log_info("Testing XS\n");
+    $ENV{PERL_POSIX_STRFTIME_GNU_PP} = 1;
+    return $self->SUPER::ACTION_test(@_);
+};
+
+sub ACTION_test {
+    my $self = shift;
+    $self->depends_on('test_pp');
+    $self->depends_on('test_xs') unless $self->args('pp');
+};
+
 1;
