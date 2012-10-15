@@ -59,8 +59,8 @@ my $build = Module::Build::My->new(
     add_to_cleanup          => [
         '*.bak', '*.gz', '*.tgz', '*.ppd', '*.ppmx', '*.deb',
         'pm_to_blib', 'cover_db', 'Debian_CPANTS.txt',
+        'compilet*', 'test-.*.exe',
         "$dist-*",
-        'test-.*.exe',
     ],
     meta_merge              => {
         resources               => {

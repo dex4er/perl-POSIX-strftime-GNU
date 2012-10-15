@@ -320,8 +320,6 @@ sub strftime {
         return $1 . sprintf "%0${digits}s", $2;
     };
 
-    my @mod;
-
     # recursively handle modifiers
     $fmt =~ s/%([_0\^#-]*)([_0\^#-])((?:[1-9][0-9]*)?:*[EO]?[a-zA-Z])/$strftime_modifier->($1, $2, $3, @t)/ge;
 
