@@ -378,6 +378,10 @@ sub strftime {
 1;
 
 
+=head1 PERFORMANCE
+
+The PP module is about 10 times slower than XS module.
+
 =head1 SEE ALSO
 
 L<POSIX::strftime::GNU>.
