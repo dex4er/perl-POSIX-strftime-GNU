@@ -310,7 +310,7 @@ sub strftime {
         my $str = strftime("%$format", @t);
 
         for (;;) {
-            if ($modifier eq '_' and $suffix !~ /0/ or $modifier eq '-' and $suffix !~ /0/ and $format =~ /[aAbBDFhnpPrRtTxXZ]$/) {
+            if ($modifier eq '_' and $suffix !~ /0/ or $modifier eq '-' and $suffix !~ /0/ and $format =~ /[aAbBDFhnpPrRtTxXZ%]$/) {
                 $str =~ s/^([+-])(0+)(\d:.*?|\d$)/' ' x length($2) . $1 . $3/ge;
                 $str =~ s/^(0+)(.+?)$/' ' x length($1) . $2/ge;
             }
@@ -354,10 +354,10 @@ sub strftime {
     };
 
     # recursively handle modifiers
-    $fmt =~ s/%([_0\^#-]*)([_0\^#-])((?:[1-9][0-9]*)?:*[EO]?[a-zA-Z])/$strftime_modifier->($1, $2, $3, @t)/ge;
+    $fmt =~ s/%([_0\^#-]*)([_0\^#-])((?:[1-9][0-9]*)?:*[EO]?[a-zA-Z%])/$strftime_modifier->($1, $2, $3, @t)/ge;
 
     # numbers before character
-    $fmt =~ s/%([1-9][0-9]*)([EO]?[aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%([1-9][0-9]*)([EO]?[aAbBDeFhklnpPrRtTxXZ%])/sprintf("%$1s", strftime("%$2", @t))/ge;
     $fmt =~ s/%([1-9][0-9]*)(:*[z])/$strftime_0z->($1, "%$2", @t)/ge;
     $fmt =~ s/%([1-9][0-9]*)([EO]?[CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
 
@@ -370,7 +370,7 @@ sub strftime {
     $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
 
     # as-is if there is some modifiers left
-    $fmt =~ s/%([_0\^#-]+(?:[1-9][0-9]*)?|[_0\^#-]?(?:[1-9][0-9]*))([a-zA-Z])/%%$1$2/;
+    $fmt =~ s/%([_0\^#-]+(?:[1-9][0-9]*)?|[_0\^#-]?(?:[1-9][0-9]*))([a-zA-Z%])/%%$1$2/;
 
     return strftime_orig($fmt, @t);
 };
