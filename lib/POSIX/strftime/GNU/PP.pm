@@ -397,11 +397,16 @@ Piotr Roszatycki <dexter@cpan.org>
 
 Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
 
+This is free software; you can redistribute it and/or modify it under
+the same terms as perl itself.
+
 ISO 8601 functions:
 
 Copyright (c) 1991-2001, 2003-2007, 2009-2012 Free Software Foundation, Inc.
 
-This is free software; you can redistribute it and/or modify it under
-the same terms as perl itself.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
 
 See L<http://dev.perl.org/licenses/artistic.html>
