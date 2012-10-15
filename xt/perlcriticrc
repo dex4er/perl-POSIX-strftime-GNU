@@ -38,5 +38,7 @@ allow_with_category_restriction = 1
 [TestingAndDebugging::ProhibitProlongedStrictureOverride]
 statements = 12
 
+[-ValuesAndExpressions::ProhibitConstantPragma]
+
 [Variables::ProhibitReusedNames]
 allow = $self @t

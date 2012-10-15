@@ -28,6 +28,16 @@ use Carp ();
 use POSIX ();
 use Time::Local ();
 
+use constant SEC   => 0;
+use constant MIN   => 1;
+use constant HOUR  => 2;
+use constant MDAY  => 3;
+use constant MON   => 4;
+use constant YEAR  => 5;
+use constant WDAY  => 6;
+use constant YDAY  => 7;
+use constant ISDST => 8;
+
 # $str = tzoffset (@time)
 #
 # Returns the C<+hhmm> or C<-hhmm> numeric timezone (the hour and minute offset
@@ -144,8 +154,8 @@ my $tzname = sub {
     my $diff = $tzoffset->(3, @t);
 
     my @t1 = my @t2 = @t;
-    @t1[3,4] = (1, 1);
-    @t2[3,4] = (1, 7);
+    @t1[MDAY,MON] = (1, 1);
+    @t2[MDAY,MON] = (1, 7);
 
     my $diff1 = $tzoffset->(3, @t1);
     my $diff2 = $tzoffset->(3, @t2);
@@ -162,40 +172,60 @@ my $tzname = sub {
     return 'Etc';
 };
 
-# $num = isoweeknum (@time)
-#
-# Returns the number of the week based on ISO-8601 standard. See
-# L<http://en.wikipedia.org/wiki/ISO_8601> for details.
+use constant ISO_WEEK_START_WDAY => 1;  # Monday
+use constant ISO_WEEK1_WDAY      => 4;  # Thursday
+use constant YDAY_MINIMUM        => -366;
+use constant TM_YEAR_BASE        => 1900;
 
-my $isoweeknum = sub {
+# ($days, $year_adjust) = isodaysnum (@time)
+#
+# Returns the number of the year's day based on ISO-8601 standard and year
+# adjust value.
+
+my $isodaysnum = sub {
     my @t = @_;
 
-    CALC:
+    my $isleap = sub {
+        my ($year) = @_;
+        return (($year) % 4 == 0 && (($year) % 100 != 0 || ($year) % 400 == 0));
+    };
 
-    # http://en.wikipedia.org/wiki/ISO_8601
-    # week 01 is the week with the year's first Thursday in it (the ISO 8601 definition)
-    my $year = $t[5];
+    my $iso_week_days = sub {
+        my ($yday, $wday) = @_;
 
-    my $first_day = strftime_orig('%w', 0, 0, 0, 1, 0, $year);
-    my $last_day = strftime_orig('%w', 0, 0, 0, 31, 11, $year);
+        # Add enough to the first operand of % to make it nonnegative.
+        my $big_enough_multiple_of_7 = (int(- YDAY_MINIMUM / 7) + 2) * 7;
+        return ($yday
+                - ($yday - $wday + ISO_WEEK1_WDAY + $big_enough_multiple_of_7) % 7
+                + ISO_WEEK1_WDAY - ISO_WEEK_START_WDAY);
+    };
 
-    my $number = my $isonumber = strftime_orig('%W', @t);
+    # Normalize @t array, we need WDAY
+    @t = gmtime Time::Local::timegm(@t);
 
-    $isonumber-- if $first_day == 1;
+    # YEAR is a leap year if and only if (tp->tm_year + TM_YEAR_BASE)
+    # is a leap year, except that YEAR and YEAR - 1 both work
+    # correctly even when (tp->tm_year + TM_YEAR_BASE) would
+    # overflow.
+    my $year = ($t[YEAR] + ($t[YEAR] < 0 ? TM_YEAR_BASE % 400 : TM_YEAR_BASE % 400 - 400));
+    my $year_adjust = 0;
+    my $days = $iso_week_days->($t[YDAY], $t[WDAY]);
 
-    if ($first_day >= 1 && $first_day <= 4) {
-        $isonumber++;
+    if ($days < 0) {
+        # This ISO week belongs to the previous year.
+        $year_adjust = -1;
+        $days = $iso_week_days->($t[YDAY] + (365 + $isleap->($year - 1)), $t[WDAY]);
     }
-    elsif ($number == 0) {
-        @t = (0, 0, 0, 31, 11, $year - 1);
-        goto CALC;
+    else {
+        my $d = $iso_week_days->($t[YDAY] - (365 + $isleap->($year)), $t[WDAY]);
+        if ($d >= 0) {
+            # This ISO week belongs to the next year.  */
+            $year_adjust = 1;
+            $days = $d;
+        };
     };
 
-    if ($isonumber == 53 && ($last_day == 1 || $last_day == 2 || $last_day == 3)) {
-        $isonumber = 1;
-    };
-
-    return sprintf('%02d', $isonumber);
+    return ($days, $year_adjust);
 };
 
 # $num = isoyearnum (@time)
@@ -205,17 +235,20 @@ my $isoweeknum = sub {
 
 my $isoyearnum = sub {
     my @t = @_;
+    my ($days, $year_adjust) = $isodaysnum->(@t);
+    return sprintf '%04d', $t[YEAR] + TM_YEAR_BASE + $year_adjust;
+};
 
-    my $year = $t[5] + 1900;
+# $num = isoweeknum (@time)
+#
+# Returns the number of the week based on ISO-8601 standard. See
+# L<http://en.wikipedia.org/wiki/ISO_8601> for details.
 
-    if ($t[4] == 0 and $isoweeknum->(@t) > 5) {
-        $year--;
-    }
-    elsif ($t[4] == 11 and $isoweeknum->(@t) < 50) {
-        $year++;
-    };
-
-    return $year;
+my $isoweeknum = sub {
+    my @t = @_;
+    @t = gmtime Time::Local::timegm(@t);
+    my ($days, $year_adjust) = $isodaysnum->(@t);
+    return sprintf '%02d', int($days / 7) + 1;
 };
 
 =head1 FUNCTIONS
@@ -231,15 +264,15 @@ This is original L<POSIX::strftime|POSIX/strftime> function.
 *strftime_orig = *POSIX::strftime;
 
 my %format = (
-    C => sub { 19 + int $_[5] / 100 },
+    C => sub { 19 + int $_[YEAR] / 100 },
     D => sub { '%m/%d/%y' },
-    e => sub { sprintf '%2d', $_[3] },
+    e => sub { sprintf '%2d', $_[MDAY] },
     F => sub { '%Y-%m-%d' },
     G => $isoyearnum,
     g => sub { sprintf '%02d', $isoyearnum->(@_) % 100 },
     h => sub { '%b' },
-    k => sub { sprintf '%2d', $_[2] },
-    l => sub { sprintf '%2d', $_[2] % 12 + ($_[2] % 12 == 0 ? 12 : 0) },
+    k => sub { sprintf '%2d', $_[HOUR] },
+    l => sub { sprintf '%2d', $_[HOUR] % 12 + ($_[HOUR] % 12 == 0 ? 12 : 0) },
     n => sub { "\n" },
     P => sub { lc strftime_orig('%p', @_) },
     r => sub { '%I:%M:%S %p' },
@@ -356,6 +389,10 @@ Piotr Roszatycki <dexter@cpan.org>
 =head1 LICENSE
 
 Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
+
+ISO 8601 functions:
+
+Copyright (c) 1991-2001, 2003-2007, 2009-2012 Free Software Foundation, Inc.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.
