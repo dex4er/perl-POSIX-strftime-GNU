@@ -24,6 +24,7 @@ Makefile.old
 _build
 blib
 compilet.*
+test-.*
 cover_db
 nytprof
 nytprof.out

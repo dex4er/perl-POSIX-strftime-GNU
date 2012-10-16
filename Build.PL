@@ -15,14 +15,6 @@ my $module = 'POSIX::strftime::GNU';
 
 (my $dist = $module) =~ s/::/-/g;
 
-my $cflags = $ENV{CFLAGS} || '';
-$cflags .= ' -DHAVE_MKTIME'    if $Config{d_mktime};
-$cflags .= ' -DHAVE_TM_GMTOFF' if $Config{d_tm_tm_gmtoff};
-$cflags .= ' -DHAVE_TM_ZONE'   if $Config{d_tm_tm_zone};
-$cflags .= ' -DHAVE_TZNAME'    if $Config{d_tzname};
-
-my $ldflags = $ENV{LDFLAGS} || '';
-
 my $build = Module::Build::My->new(
     module_name             => $module,
     license                 => 'perl',
@@ -46,8 +38,6 @@ my $build = Module::Build::My->new(
     },
     xs_files                => {
     },
-    extra_compiler_flags    => $cflags,
-    extra_linker_flags      => $ldflags,
     include_dirs            => [
         'xs',
     ],
@@ -59,7 +49,7 @@ my $build = Module::Build::My->new(
     add_to_cleanup          => [
         '*.bak', '*.gz', '*.tgz', '*.ppd', '*.ppmx', '*.deb',
         'pm_to_blib', 'cover_db', 'Debian_CPANTS.txt',
-        'compilet*', 'test-.*.exe',
+        'compilet*', 'test-.*',
         "$dist-*",
     ],
     meta_merge              => {
@@ -70,9 +60,7 @@ my $build = Module::Build::My->new(
     },
 );
 
-my $cc = ExtUtils::CBuilder->new;
-
-$build->args(pp => 1) if not $cc->have_compiler;
+$build->args(pp => 1) if not $build->cbuilder->have_compiler;
 
 if (! $build->args('pp')) {
     $build->xs_files({ %{$build->xs_files}, 'xs/strftime.xs' => 'lib/POSIX/strftime/GNU/XS.xs' });

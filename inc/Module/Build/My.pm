@@ -8,11 +8,16 @@ use warnings;
 use base 'Module::Build';
 
 use Config;
-use ExtUtils::CBuilder;
 
-my $cc = ExtUtils::CBuilder->new;
-
-my %objs;
+sub new {
+    my ($class, @args) = @_;
+    my $self = $class->SUPER::new(@args);
+    $self->config(cc => $ENV{CC}) if defined $ENV{CC};
+    $self->config(ld => $ENV{LD}, lddl => $ENV{LD}) if defined $ENV{LD};
+    $self->extra_compiler_flags($ENV{CFLAGS}) if defined $ENV{CFLAGS};
+    $self->extra_linker_flags($ENV{LDFLAGS}) if defined $ENV{LDFLAGS};
+    return $self;
+};
 
 sub ACTION_xs_config {
     my $self = shift;
@@ -21,11 +26,17 @@ sub ACTION_xs_config {
     my $config_h = 'xs/xs_config.h';
     $self->add_to_cleanup($config_h);
 
-    require ExtUtils::CChecker;
+    return if $self->up_to_date('Build', $config_h);
 
+    require ExtUtils::CChecker;
     my $chk = ExtUtils::CChecker->new(
         defines_to => $config_h,
     );
+
+    $chk->define('HAVE_MKTIME 1')    if $Config{d_mktime};
+    $chk->define('HAVE_TM_GMTOFF 1') if $Config{d_tm_tm_gmtoff};
+    $chk->define('HAVE_TM_ZONE 1')   if $Config{d_tm_tm_zone};
+    $chk->define('HAVE_TZNAME 1')    if $Config{d_tzname};
 
     foreach my $kw (qw( __restrict __restrict__ _Restrict restrict )) {
         last if $chk->try_compile_run(
@@ -97,16 +108,16 @@ sub ACTION_gnulib {
 
     $self->depends_on('xs_config');
 
-    if (my $o = $cc->object_file(my $c = 'xs/time_r.c')) {
+    if (my $o = $self->cbuilder->object_file(my $c = 'xs/time_r.c')) {
         $self->add_to_cleanup($o);
-        $cc->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
+        $self->cbuilder->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
         push @{$self->{properties}{objects}}, $o;
     }
 
-    if (my $o = $cc->object_file(my $c = 'xs/gnu_strftime.c')) {
+    if (my $o = $self->cbuilder->object_file(my $c = 'xs/gnu_strftime.c')) {
         $self->add_to_cleanup($o);
-        $cc->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
+        $self->cbuilder->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
         push @{$self->{properties}{objects}}, $o;
     }
