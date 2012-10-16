@@ -23,8 +23,8 @@ Makefile.PL
 Makefile.old
 _build
 blib
-compilet.*
-test-.*
+compilet*
+test-*
 cover_db
 nytprof
 nytprof.out
