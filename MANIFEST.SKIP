@@ -68,6 +68,7 @@
 
 # Avoid compiler artefacts
 \bcompilet
+\btest-
 \.exe$
 \.o$
 
