@@ -110,14 +110,14 @@ sub ACTION_gnulib {
 
     if (my $o = $self->cbuilder->object_file(my $c = 'xs/time_r.c')) {
         $self->add_to_cleanup($o);
-        $self->cbuilder->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
+        $self->cbuilder->compile(source => $c, object_file => $o, include_dirs => ['xs'], extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
         push @{$self->{properties}{objects}}, $o;
     }
 
     if (my $o = $self->cbuilder->object_file(my $c = 'xs/gnu_strftime.c')) {
         $self->add_to_cleanup($o);
-        $self->cbuilder->compile(source => $c, object_file => $o, include_dirs => 'xs', extra_compiler_flags => $self->extra_compiler_flags)
+        $self->cbuilder->compile(source => $c, object_file => $o, include_dirs => ['xs'], extra_compiler_flags => $self->extra_compiler_flags)
             unless $self->up_to_date($c, $o);
         push @{$self->{properties}{objects}}, $o;
     }
