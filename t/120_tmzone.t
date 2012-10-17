@@ -9,7 +9,7 @@ use Time::Local;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More $^O eq 'linux' ? (tests => 26) : (skip_all => 'This test can run only on Linux with tzdata');
+use Test::More $^O eq 'linux' ? (tests => 18) : (skip_all => 'This test can run only on Linux');
 
 BEGIN { use_ok 'POSIX::strftime::GNU'; }
 BEGIN { use_ok 'POSIX', qw( strftime ); }
@@ -17,11 +17,9 @@ BEGIN { use_ok 'POSIX', qw( strftime ); }
 POSIX::setlocale(&POSIX::LC_TIME, 'C');
 
 my %tmzone = (
-    'Asia/Riyadh89'       => [qw( +0307 zzz    +0307 zzz    )],
-    'Australia/Lord_Howe' => [qw( +1100 LHST   +1030 LHST   )],
     'GMT'                 => [qw( +0000 GMT    +0000 GMT    )],
-    'Japan'               => [qw( +0900 JST    +0900 JST    )],
-    'Poland'              => [qw( +0100 CET    +0200 CEST   )],
+    'JST-9'               => [qw( +0900 JST    +0900 JST    )],
+    'CET-1CEST'           => [qw( +0100 CET    +0200 CEST   )],
     'PST8PDT'             => [qw( -0800 PST    -0700 PDT    )],
 );
 
