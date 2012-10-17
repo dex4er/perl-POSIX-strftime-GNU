@@ -60,6 +60,8 @@ my $build = Module::Build::My->new(
     },
 );
 
+$build->log_info("Hint: run '$^X Build.PL --pp' if you don't want to compile XS module \n");
+
 $build->args(pp => 1) if not $build->cbuilder->have_compiler;
 
 if (! $build->args('pp')) {
