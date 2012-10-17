@@ -3,14 +3,14 @@ severity = 3
 verbose = 4
 
 [ControlStructures::ProhibitCascadingIfElse]
-max_elsif = 5
+max_elsif = 8
 
 [-ControlStructures::ProhibitNegativeExpressionsInUnlessAndUntilConditions]
 
 [-ErrorHandling::RequireCarping]
 
 [Modules::ProhibitExcessMainComplexity]
-max_mccabe = 30
+max_mccabe = 32
 
 [NamingConventions::ProhibitAmbiguousNames]
 forbid = last set left right no abstract contract record second
@@ -33,7 +33,12 @@ short_subroutine_statements = 2
 allow = vars subs refs
 
 [TestingAndDebugging::ProhibitNoWarnings]
-allow = all
+allow_with_category_restriction = 1
 
 [TestingAndDebugging::ProhibitProlongedStrictureOverride]
 statements = 12
+
+[-ValuesAndExpressions::ProhibitConstantPragma]
+
+[Variables::ProhibitReusedNames]
+allow = $self @t

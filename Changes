@@ -1,4 +1,11 @@
 ------------------------------------------------------------------------
+0.02    2012-10-17      Piotr Roszatycki <dexter@cpan.org>
+
+* GNU modifiers (ie. "%-", "%_", etc.) in PP module are fully supported.
+* Sequences "%z" and "%Z" in XS module are also supported.
+* FreeBSD, Solaris 11 and Windows are fully supported.
+
+------------------------------------------------------------------------
 0.01    2012-10-09      Piotr Roszatycki <dexter@cpan.org>
 
 * First CPAN release.

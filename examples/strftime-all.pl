@@ -9,6 +9,8 @@ my @format = qw( a A b B c C d D e Ec EC Ex EX EY Ey F G g h H I j k l m M n Od 
 
 my @t = localtime;
 
+my $modifier = defined $ARGV[0] ? $ARGV[0] : '';
+
 foreach my $f (@format) {
-    printf "%-2s => '%s',\n", $f, POSIX::strftime("%$f", @t);
+    printf "%-2s => '%s',\n", $f, POSIX::strftime("%$modifier$f", @t);
 };

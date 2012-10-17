@@ -22,9 +22,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
-
-use POSIX::strftime::GNU::PP;
+our $VERSION = '0.02';
 
 use Carp ();
 use Config;
@@ -33,21 +31,11 @@ use POSIX ();
 require XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);
 
-my %format = (
-    $^O eq 'MSWin32' ? (h => sub { '%b' }) : (),
-    $^O eq 'MSWin32' ? (r => sub { '%I:%M:%S %p' }) : (),
-    $^O eq 'MSWin32' ? (s => sub { Time::Local::timegm(@_) }) : (),
-    z => \&POSIX::strftime::GNU::PP::tzoffset,
-    Z => \&POSIX::strftime::GNU::PP::tzname,
-);
-
-my $formats = join '', sort keys %format;
-
 =head1 FUNCTIONS
 
 =over
 
-=item $str = strftime (@time)
+=item $str = strftime ($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
@@ -55,25 +43,9 @@ This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
 =cut
 
-if ($^O eq 'MSWin32' or not $Config{d_tm_tm_zone}) {
-    *strftime = sub {
-        my ($fmt, @t) = @_;
+no warnings 'once';
+*strftime = *xs_strftime;
 
-        Carp::croak 'Usage: POSIX::strftime::GNU::XS::strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)'
-            unless @t >= 6 and @t <= 9;
-
-        if ($^O eq 'MSWin32') {
-            $fmt =~ s/%E([CcXxYy])/%$1/;
-            $fmt =~ s/%O([deHIMmSUuVWwy])/%$1/;
-        };
-        $fmt =~ s/%([$formats])/$format{$1}->(@t)/ge;
-
-        return xs_strftime($fmt, @t);
-    };
-}
-else {
-    *strftime = *xs_strftime;
-};
 
 1;
 
@@ -92,5 +64,14 @@ Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.
+
+strftime function:
+
+Copyright (c) 1991-2001, 2003-2007, 2009-2012 Free Software Foundation, Inc.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
 
 See L<http://dev.perl.org/licenses/artistic.html>

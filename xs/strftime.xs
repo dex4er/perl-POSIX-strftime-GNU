@@ -13,8 +13,7 @@
 #define NEED_sv_2pv_flags
 #include "ppport.h"
 
-
-size_t gnu_strftime (char *s, size_t maxsize, const char *format, const struct tm *tp);
+#include "gnu_strftime.h"
 
 
 /*    Based on util.c
@@ -28,7 +27,7 @@ size_t gnu_strftime (char *s, size_t maxsize, const char *format, const struct t
  */
 
 #ifndef init_tm
-# ifdef HAVE_TM_ZONE
+# ifdef HAS_TM_TM_ZONE
 static void
 init_tm(struct tm *ptm)		/* see mktime, strftime and asctime	*/
 {
@@ -265,15 +264,15 @@ my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int
   mytm.tm_isdst = isdst;
   mini_mktime(&mytm);
   /* use libc to get the values for tm_gmtoff and tm_zone [perl #18238] */
-#if defined(HAVE_MKTIME) && (defined(HAVE_TM_GMTOFF) || defined(HAVE_TM_ZONE))
+#if defined(HAS_MKTIME) && (defined(HAS_TM_TM_GMTOFF) || defined(HAS_TM_TM_ZONE))
   STMT_START {
     struct tm mytm2;
     mytm2 = mytm;
     mktime(&mytm2);
-#ifdef HAVE_TM_GMTOFF
+#ifdef HAS_TM_TM_GMTOFF
     mytm.tm_gmtoff = mytm2.tm_gmtoff;
 #endif
-#ifdef HAVE_TM_ZONE
+#ifdef HAS_TM_TM_ZONE
     mytm.tm_zone = mytm2.tm_zone;
 #endif
   } STMT_END;

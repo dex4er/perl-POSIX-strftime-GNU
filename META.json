@@ -4,7 +4,7 @@
       "Piotr Roszatycki <dexter@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.3901, CPAN::Meta::Converter version 2.120630",
+   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.120630",
    "license" : [
       "perl_5"
    ],
@@ -31,15 +31,15 @@
    "provides" : {
       "POSIX::strftime::GNU" : {
          "file" : "lib/POSIX/strftime/GNU.pm",
-         "version" : "0.01"
+         "version" : "0.02"
       },
       "POSIX::strftime::GNU::PP" : {
          "file" : "lib/POSIX/strftime/GNU/PP.pm",
-         "version" : "0.01"
+         "version" : "0.02"
       },
       "POSIX::strftime::GNU::XS" : {
          "file" : "lib/POSIX/strftime/GNU/XS.pm",
-         "version" : "0.01"
+         "version" : "0.02"
       }
    },
    "release_status" : "stable",
@@ -54,5 +54,5 @@
          "url" : "http://github.com/dex4er/perl-POSIX-strftime-GNU"
       }
    },
-   "version" : "0.01"
+   "version" : "0.02"
 }

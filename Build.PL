@@ -15,12 +15,6 @@ my $module = 'POSIX::strftime::GNU';
 
 (my $dist = $module) =~ s/::/-/g;
 
-my $cflags = '-Wall -g';
-$cflags .= ' -DHAVE_MKTIME'    if $Config{d_mktime};
-$cflags .= ' -DHAVE_TM_GMTOFF' if $Config{d_tm_tm_gmtoff};
-$cflags .= ' -DHAVE_TM_ZONE'   if $Config{d_tm_tm_zone};
-$cflags .= ' -DHAVE_TZNAME'    if $Config{d_tzname};
-
 my $build = Module::Build::My->new(
     module_name             => $module,
     license                 => 'perl',
@@ -44,18 +38,18 @@ my $build = Module::Build::My->new(
     },
     xs_files                => {
     },
-    extra_compiler_flags    => $cflags,
     include_dirs            => [
         'xs',
     ],
     auto_configure_requires => 0,
-    create_makefile_pl      => 'traditional',
+    create_makefile_pl      => 'small',
     create_readme           => 1,
     create_license          => 1,
     recursive_test_files    => 0,
     add_to_cleanup          => [
-        '*.bak', '*.gz', '*.tgz', '*.ppd', '*.ppmx', '*.deb', '*.bat',
-        'Makefile', 'pm_to_blib', 'cover_db', 'Debian_CPANTS.txt',
+        '*.bak', '*.gz', '*.tgz', '*.ppd', '*.ppmx', '*.deb',
+        'pm_to_blib', 'cover_db', 'Debian_CPANTS.txt',
+        'compilet*', 'test-*',
         "$dist-*",
     ],
     meta_merge              => {
@@ -66,9 +60,9 @@ my $build = Module::Build::My->new(
     },
 );
 
-my $cc = ExtUtils::CBuilder->new;
+$build->log_info("Hint: run '$^X Build.PL --pp' if you don't want to compile XS module \n");
 
-$build->args(pp => 1) if not $cc->have_compiler;
+$build->args(pp => 1) if not $build->cbuilder->have_compiler;
 
 if (! $build->args('pp')) {
     $build->xs_files({ %{$build->xs_files}, 'xs/strftime.xs' => 'lib/POSIX/strftime/GNU/XS.xs' });

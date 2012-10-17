@@ -16,22 +16,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifdef _LIBC
-# define HAVE_STRUCT_ERA_ENTRY 1
-# define HAVE_TM_GMTOFF 1
-# define HAVE_TM_ZONE 1
-# define HAVE_TZNAME 1
-# define HAVE_TZSET 1
-# include "../locale/localeinfo.h"
-#else
-# include <config.h>
-# if FPRINTFTIME
-#  include "ignore-value.h"
-#  include "fprintftime.h"
-# else
-#  include "strftime.h"
-# endif
-#endif
+
+#include "gnu_config.h"
+#include "gnu_strftime.h"
+#include "time_r.h"
 
 #include <ctype.h>
 #include <time.h>
@@ -407,7 +395,7 @@ iso_week_days (int yday, int wday)
 #  define my_strftime wcsftime
 #  define nl_get_alt_digit _nl_get_walt_digit
 # else
-#  define my_strftime strftime
+#  define my_strftime gnu_strftime
 #  define nl_get_alt_digit _nl_get_alt_digit
 # endif
 # define extra_args
@@ -417,6 +405,136 @@ iso_week_days (int yday, int wday)
 # define ns 0
 #endif
 
+
+#if ! HAVE_TM_GMTOFF
+/* Calculate TZ offset.
+   Return -1 for errors.  */
+static int
+gmtoff (const struct tm *tp)
+{
+  struct tm gtm;
+  struct tm ltm;
+  time_t lt;
+
+  ltm = *tp;
+  lt = mktime (&ltm);
+
+  if (lt == (time_t) -1)
+    {
+      /* mktime returns -1 for errors, but -1 is also a
+         valid time_t value.  Check whether an error really
+         occurred.  */
+      struct tm tm;
+
+      if (! __localtime_r (&lt, &tm)
+          || ((ltm.tm_sec ^ tm.tm_sec)
+              | (ltm.tm_min ^ tm.tm_min)
+              | (ltm.tm_hour ^ tm.tm_hour)
+              | (ltm.tm_mday ^ tm.tm_mday)
+              | (ltm.tm_mon ^ tm.tm_mon)
+              | (ltm.tm_year ^ tm.tm_year)))
+        return -1;
+    }
+
+  if (! __gmtime_r (&lt, &gtm))
+    return -1;
+
+  return tm_diff (&ltm, &gtm);
+}
+#endif
+
+
+typedef struct tmzones
+  {
+    int offset1;
+    int isdst1;
+    char *name1;
+    int offset2;
+    int isdst2;
+    char *name2;
+  }
+tmzones;
+
+static tmzones offset2zone[] =
+  {
+    { -11*3600,        0, "SST",    -11*3600,        0, "SST"    },
+    { -10*3600,        0, "HAST",   - 9*3600,        1, "HADT"   },
+    { -10*3600,        0, "HST",    -10*3600,        0, "HST"    },
+    { - 9*3600-30*60,  0, "MART",   - 9*3600-30*60,  0, "MART"   },
+    { - 9*3600,        0, "AKST",   - 8*3600,        1, "AKDT"   },
+    { - 9*3600,        0, "GAMT",   - 9*3600,        0, "GAMT"   },
+    { - 8*3600,        0, "PST",    - 7*3600,        1, "PDT"    },
+    { - 8*3600,        0, "PST",    - 8*3600,        0, "PST"    },
+    { - 7*3600,        0, "MST",    - 6*3600,        1, "MDT"    },
+    { - 7*3600,        0, "MST",    - 7*3600,        0, "MST"    },
+    { - 6*3600,        0, "CST",    - 5*3600,        1, "CDT"    },
+    { - 6*3600,        0, "GALT",   - 6*3600,        0, "GALT"   },
+    { - 5*3600,        0, "ECT",    - 5*3600,        0, "ECT"    },
+    { - 5*3600,        0, "EST",    - 4*3600,        1, "EDT"    },
+    { - 5*3600,        1, "EASST",  - 6*3600,        0, "EAST"   },
+    { - 4*3600-30*60,  0, "VET",    - 4*3600+30*60,  0, "VET"    },
+    { - 4*3600,        0, "AMT",    - 4*3600,        0, "AMT"    },
+    { - 4*3600,        0, "AST",    - 3*3600,        1, "ADT"    },
+    { - 3*3600-30*60,  0, "NST",    - 2*3600-30*60,  1, "NDT"    },
+    { - 3*3600,        0, "ART",    - 3*3600,        0, "ART"    },
+    { - 3*3600,        0, "PMST",   - 2*3600,        1, "PMDT"   },
+    { - 3*3600,        1, "AMST",   - 4*3600,        0, "AMT"    },
+    { - 3*3600,        1, "WARST",  - 3*3600,        1, "WARST"  },
+    { - 2*3600,        0, "FNT",    - 2*3600,        0, "FNT"    },
+    { - 2*3600,        1, "UYST",   - 3*3600,        0, "UYT"    },
+    { - 1*3600,        0, "AZOT",   + 0,             1, "AZOST"  },
+    { - 1*3600,        0, "CVT",    - 1*3600,        0, "CVT"    },
+    { + 0,             0, "GMT",    + 0,             0, "GMT"    },
+    { + 0,             0, "WET",    + 1*3600,        1, "WEST"   },
+    { + 1*3600,        0, "CET",    + 2*3600,        1, "CEST"   },
+    { + 1*3600,        0, "WAT",    + 1*3600,        0, "WAT"    },
+    { + 2*3600,        0, "EET",    + 2*3600,        0, "EET"    },
+    { + 2*3600,        0, "IST",    + 3*3600,        1, "IDT"    },
+    { + 2*3600,        1, "WAST",   + 1*3600,        0, "WAT"    },
+    { + 3*3600+7*60+4, 0, "zzz",    + 3*3600+7*60+4, 0, "zzz"    },
+    { + 3*3600+30*60,  0, "IRST",   + 4*3600+30*60,  1, "IRDT"   },
+    { + 3*3600,        0, "FET",    + 3*3600,        0, "FET"    },
+    { + 4*3600+30*60,  0, "AFT",    + 4*3600+30*60,  0, "AFT"    },
+    { + 4*3600,        0, "AZT",    + 5*3600,        1, "AZST"   },
+    { + 4*3600,        0, "GST",    + 4*3600,        0, "GST"    },
+    { + 5*3600+30*60,  0, "IST",    + 5*3600+30*60,  0, "IST"    },
+    { + 5*3600+45*60,  0, "NPT",    + 5*3600+45*60,  0, "NPT"    },
+    { + 5*3600,        0, "DAVT",   + 7*3600,        0, "DAVT"   },
+    { + 5*3600,        0, "MVT",    + 5*3600,        0, "MVT"    },
+    { + 6*3600+30*60,  0, "CCT",    + 6*3600+30*60,  0, "CCT"    },
+    { + 6*3600,        0, "BDT",    + 6*3600,        0, "BDT"    },
+    { + 7*3600,        0, "ICT",    + 7*3600,        0, "ICT"    },
+    { + 8*3600+45*60,  0, "CWST",   + 8*3600+45*60,  0, "CWST"   },
+    { + 8*3600,        0, "HKT",    + 8*3600,        0, "HKT"    },
+    { + 9*3600+30*60,  0, "CST",    + 9*3600+30*60,  0, "CST"    },
+    { + 9*3600,        0, "JST",    + 9*3600,        0, "JST"    },
+    { +10*3600+30*60,  1, "CST",    + 9*3600+30*60,  0, "CST"    },
+    { +10*3600,        0, "PGT",    +10*3600,        0, "PGT"    },
+    { +11*3600+30*60,  0, "NFT",    +11*3600+30*60,  0, "NFT"    },
+    { +11*3600,        0, "CAST",   + 8*3600,        0, "WST"    },
+    { +11*3600,        0, "NCT",    +11*3600,        0, "NCT"    },
+    { +11*3600,        1, "EST",    +10*3600,        0, "EST"    },
+    { +11*3600,        1, "LHST",   +10*3600+30*60,  0, "LHST"   },
+    { +12*3600,        0, "FJT",    +12*3600,        0, "FJT"    },
+    { +13*3600+45,     1, "CHADT",  +12*3600+45*60,  0, "CHAST"  },
+    { +13*3600,        0, "TKT",    +13*3600,        0, "TKT"    },
+    { +13*3600,        1, "NZDT",   +12*3600,        0, "NZST"   },
+    { +14*3600,        0, "LINT",   +14*3600,        0, "LINT"   },
+    { +14*3600,        1, "WSDT",   +13*3600,        0, "WST"    }
+  };
+
+static char *gmtzones[] =
+  {
+    "GMT+24", "GMT+23", "GMT+22", "GMT+21", "GMT+20", "GMT+19",
+    "GMT+18", "GMT+17", "GMT+16", "GMT+15", "GMT+14", "GMT+13",
+    "GMT+12", "GMT+11", "GMT+10", "GMT+9",  "GMT+8",  "GMT+7",
+    "GMT+6",  "GMT+5",  "GMT+4",  "GMT+3",  "GMT+2",  "GMT+1",
+    "GMT",    "GMT-1",  "GMT-2",  "GMT-3",  "GMT-4",  "GMT-5",
+    "GMT-6",  "GMT-7",  "GMT-8",  "GMT-9",  "GMT-10", "GMT-11",
+    "GMT-12", "GMT-13", "GMT-14", "GMT-15", "GMT-16", "GMT-17",
+    "GMT-18", "GMT-19", "GMT-20", "GMT-21", "GMT-22", "GMT-23",
+    "GMT-24"
+  };
 
 /* Just like my_strftime, below, but with one more parameter, UPCASE,
    to indicate that the result should be converted to upper case.  */
@@ -751,7 +869,8 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
           cpy (am_len, a_month);
           break;
 #else
-          goto underlying_strftime;
+          format_char = L_('b');
+          /* no break */
 #endif
 
         case L_('B'):
@@ -817,8 +936,14 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                output.  */
             *u++ = ' ';
             *u++ = '%';
-            if (modifier != 0)
+# ifdef HAVE_STRFTIME_E_MODIFIER
+            if (modifier == L_('E'))
               *u++ = modifier;
+# endif
+# ifdef HAVE_STRFTIME_O_MODIFIER
+            if (modifier == L_('O'))
+              *u++ = modifier;
+# endif
             *u++ = format_char;
             *u = '\0';
             len = strftime (ubuf, sizeof ubuf, ufmt, tp);
@@ -846,8 +971,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
 # endif
                   break;
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
 
@@ -932,8 +1055,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                       break;
                     }
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
 
@@ -1083,6 +1204,7 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
           to_lowcase = true;
 #ifndef _NL_CURRENT
           format_char = L_('p');
+          /* no break */
 #endif
           /* FALLTHROUGH */
 
@@ -1108,11 +1230,9 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
           if (*(subfmt = (const CHAR_T *) _NL_CURRENT (LC_TIME,
                                                        NLW(T_FMT_AMPM)))
               == L_('\0'))
+#endif
             subfmt = L_("%I:%M:%S %p");
           goto subformat;
-#else
-          goto underlying_strftime;
-#endif
 
         case L_('S'):
           if (modifier == L_('E'))
@@ -1234,6 +1354,7 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                 DO_NUMBER (2, days / 7 + 1);
               }
           }
+          /* no break */
 
         case L_('W'):
           if (modifier == L_('E'))
@@ -1261,8 +1382,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
 # endif
                   goto subformat;
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
           if (modifier == L_('O'))
@@ -1282,8 +1401,6 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                   DO_NUMBER (1, (era->offset
                                  + delta * era->absolute_direction));
                 }
-#else
-              goto underlying_strftime;
 #endif
             }
 
@@ -1301,13 +1418,61 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
               to_lowcase = true;
             }
 
-#if HAVE_TZNAME
+#if HAVE_TZNAME && ! __WIN32__
           /* The tzset() call might have changed the value.  */
           if (!(zone && *zone) && tp->tm_isdst >= 0)
             zone = tzname[tp->tm_isdst != 0];
 #endif
-          if (! zone)
-            zone = "";
+          {
+            int diff, diff1, diff2;
+            int i;
+            struct tm tm1, tm2;
+            time_t t1, t2;
+
+            tm2 = *tp;
+
+            tm1 = *tp;
+            tm1.tm_mon = 1;
+            tm1.tm_mday = 1;
+            t1 = mktime(&tm1);
+            localtime_r(&t1, &tm1);
+
+            tm2.tm_mon = 7;
+            tm2.tm_mday = 1;
+            t2 = mktime(&tm2);
+            localtime_r(&t2, &tm2);
+
+#if HAVE_TM_GMTOFF
+            diff = tp->tm_gmtoff;
+            diff1 = tm1.tm_gmtoff;
+            diff2 = tm2.tm_gmtoff;
+#else
+            if (ut)
+              diff = diff1 = diff2 = 0;
+            else
+              {
+                diff = gmtoff(tp);
+                diff1 = gmtoff(&tm1);
+                diff2 = gmtoff(&tm2);
+              }
+#endif
+            for (i = 0; offset2zone[i].name1; i++)
+              {
+                if (diff1 == offset2zone[i].offset1 && diff2 == offset2zone[i].offset2)
+                  {
+                    zone = diff2 == diff ? offset2zone[i].name2 : offset2zone[i].name1;
+                    break;
+                  }
+              }
+
+            if (! zone)
+              {
+                if (diff >= -24*3600 && diff <= 24*3600)
+                  zone = gmtzones[diff / 3600 + 24];
+                else
+                  zone = "Etc";
+              }
+          }
 
 #ifdef COMPILE_WIDE
           {
@@ -1351,36 +1516,10 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
             if (ut)
               diff = 0;
             else
-              {
-                struct tm gtm;
-                struct tm ltm;
-                time_t lt;
+              diff = gmtoff(tp);
 
-                ltm = *tp;
-                lt = mktime (&ltm);
-
-                if (lt == (time_t) -1)
-                  {
-                    /* mktime returns -1 for errors, but -1 is also a
-                       valid time_t value.  Check whether an error really
-                       occurred.  */
-                    struct tm tm;
-
-                    if (! __localtime_r (&lt, &tm)
-                        || ((ltm.tm_sec ^ tm.tm_sec)
-                            | (ltm.tm_min ^ tm.tm_min)
-                            | (ltm.tm_hour ^ tm.tm_hour)
-                            | (ltm.tm_mday ^ tm.tm_mday)
-                            | (ltm.tm_mon ^ tm.tm_mon)
-                            | (ltm.tm_year ^ tm.tm_year)))
-                      break;
-                  }
-
-                if (! __gmtime_r (&lt, &gtm))
-                  break;
-
-                diff = tm_diff (&ltm, &gtm);
-              }
+            if (diff == -1)
+              break;
 #endif
 
             hour_diff = diff / 60 / 60;
@@ -1410,9 +1549,11 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                 goto bad_format;
               }
           }
+          /* no break */
 
         case L_('\0'):          /* GNU extension: % at end of format.  */
             --f;
+            /* no break */
             /* Fall through.  */
         default:
           /* Unknown format; output the format, including the '%',

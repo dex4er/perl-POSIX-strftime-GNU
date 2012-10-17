@@ -7,7 +7,7 @@ build_requires:
   ExtUtils::CChecker: 0
   Test::More: 0
 dynamic_config: 1
-generated_by: 'Module::Build version 0.3901, CPAN::Meta::Converter version 2.120630'
+generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.120630'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,13 +16,13 @@ name: POSIX-strftime-GNU
 provides:
   POSIX::strftime::GNU:
     file: lib/POSIX/strftime/GNU.pm
-    version: 0.01
+    version: 0.02
   POSIX::strftime::GNU::PP:
     file: lib/POSIX/strftime/GNU/PP.pm
-    version: 0.01
+    version: 0.02
   POSIX::strftime::GNU::XS:
     file: lib/POSIX/strftime/GNU/XS.pm
-    version: 0.01
+    version: 0.02
 requires:
   XSLoader: 0
   perl: 5.006
@@ -30,4 +30,4 @@ resources:
   bugtracker: http://github.com/dex4er/perl-POSIX-strftime-GNU/issues
   license: http://dev.perl.org/licenses/
   repository: http://github.com/dex4er/perl-POSIX-strftime-GNU
-version: 0.01
+version: 0.02

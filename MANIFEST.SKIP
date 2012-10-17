@@ -56,8 +56,10 @@
 -stamp$
 
 # Avoid Eclipse files
+.cproject
 .includepath
 .project
+.settings
 
 # Avoid distdir
 \d+\.\d+\b
@@ -65,11 +67,12 @@
 ^MYMETA\.json$
 
 # Avoid compiler artefacts
-\bcompilet_def\.old$
+\bcompilet
+\btest-
 \.exe$
 \.o$
 
 # Others
 ^lib/.*\.xs$
 ^lib/.*\.c$
-^gnulib/config.h$
+^xs/xs_config.h$
