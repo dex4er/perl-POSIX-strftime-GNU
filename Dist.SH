@@ -20,6 +20,8 @@ diff -u -I^SIGNATURE MANIFEST *-[0-9]*.[0-9]*/MANIFEST
 
 cd *-[0-9]*.[0-9]*
 
+export CFLAGS='-Wall -g -O2'
+
 $PERL Build.PL
 $PERL Build
 $PERL Build test

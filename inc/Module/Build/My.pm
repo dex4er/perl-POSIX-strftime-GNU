@@ -12,10 +12,11 @@ use Config;
 sub new {
     my ($class, @args) = @_;
     my $self = $class->SUPER::new(@args);
-    $self->config(cc => $ENV{CC}) if defined $ENV{CC};
-    $self->config(ld => $ENV{LD}, lddl => $ENV{LD}) if defined $ENV{LD};
-    $self->extra_compiler_flags($ENV{CFLAGS}) if defined $ENV{CFLAGS};
-    $self->extra_linker_flags($ENV{LDFLAGS}) if defined $ENV{LDFLAGS};
+    $self->config(cc   => $ENV{CC}) if defined $ENV{CC};
+    $self->config(ld   => $ENV{LD}) if defined $ENV{LD};
+    $self->config(lddl => $ENV{LD}) if defined $ENV{LD};
+    $self->extra_compiler_flags(split /\s/, $ENV{CFLAGS})  if defined $ENV{CFLAGS};
+    $self->extra_linker_flags(  split /\s/, $ENV{LDFLAGS}) if defined $ENV{LDFLAGS};
     return $self;
 };
 
