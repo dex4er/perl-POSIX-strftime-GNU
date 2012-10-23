@@ -9,7 +9,7 @@ BEGIN {
     # Windows can't change timezone inside Perl script
     if (($ENV{TZ}||'') ne TMZONE) {
         $ENV{TZ} = TMZONE;
-        exec $^X, (map { "-I$_" } @INC), $0;
+        exec $^X, (map { "-I\"$_\"" } @INC), $0;
     };
 }
 

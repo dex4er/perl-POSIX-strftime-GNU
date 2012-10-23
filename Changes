@@ -1,4 +1,10 @@
 ------------------------------------------------------------------------
+0.0201  2012-10-23      Piotr Roszatycki <dexter@cpan.org>
+
+* Fixed build process on Windows when current directory contains space
+  character.
+
+------------------------------------------------------------------------
 0.02    2012-10-17      Piotr Roszatycki <dexter@cpan.org>
 
 * GNU modifiers (ie. "%-", "%_", etc.) in PP module are fully supported.
