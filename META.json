@@ -31,15 +31,15 @@
    "provides" : {
       "POSIX::strftime::GNU" : {
          "file" : "lib/POSIX/strftime/GNU.pm",
-         "version" : "0.0201"
+         "version" : "0.0202"
       },
       "POSIX::strftime::GNU::PP" : {
          "file" : "lib/POSIX/strftime/GNU/PP.pm",
-         "version" : "0.0201"
+         "version" : "0.0202"
       },
       "POSIX::strftime::GNU::XS" : {
          "file" : "lib/POSIX/strftime/GNU/XS.pm",
-         "version" : "0.0201"
+         "version" : "0.0202"
       }
    },
    "release_status" : "stable",
@@ -54,5 +54,5 @@
          "url" : "http://github.com/dex4er/perl-POSIX-strftime-GNU"
       }
    },
-   "version" : "0.0201"
+   "version" : "0.0202"
 }
