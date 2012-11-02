@@ -1,6 +1,8 @@
 ------------------------------------------------------------------------
 0.0203  2012-11-02      Piotr Roszatycki <dexter@cpan.org>
 
+* Do not load any module if both of PERL_* environment variables are false.
+
 ------------------------------------------------------------------------
 0.0202  2012-11-02      Piotr Roszatycki <dexter@cpan.org>
 

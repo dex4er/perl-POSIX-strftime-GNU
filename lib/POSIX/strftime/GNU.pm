@@ -34,6 +34,9 @@ true.
 The PP module is used when XS module can not be loaded or
 C<PERL_POSIX_STRFTIME_GNU_PP> environment variable is true.
 
+None of these modules are loaded if both C<PERL_POSIX_STRFTIME_GNU_PP> and
+C<PERL_POSIX_STRFTIME_GNU_XS> environment variables are defined and false.
+
 =for readme stop
 
 =cut
@@ -60,9 +63,12 @@ This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
 =cut
 
-my $xs_loaded;
+my ($xs_loaded, $pp_loaded);
 
-if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
+if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} and (
+    not defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} or
+    defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} and not $ENV{PERL_POSIX_STRFTIME_GNU_PP}
+) ) {
     $xs_loaded = eval {
         require POSIX::strftime::GNU::XS;
         no warnings 'once';
@@ -72,15 +78,19 @@ if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
     die $@ if $@ and $ENV{PERL_POSIX_STRFTIME_GNU_XS};
 };
 
-if (not $xs_loaded) {
+if (not $xs_loaded and (
+    not defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} or
+    defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} and $ENV{PERL_POSIX_STRFTIME_GNU_PP}
+) ) {
     require POSIX::strftime::GNU::PP;
     no warnings 'once';
     *strftime = *POSIX::strftime::GNU::PP::strftime;
+    $pp_loaded = 1;
 };
 
 sub import {
     my ($class) = @_;
-    *POSIX::strftime = *strftime;
+    *POSIX::strftime = *strftime if $xs_loaded or $pp_loaded;
     return 1;
 };
 
