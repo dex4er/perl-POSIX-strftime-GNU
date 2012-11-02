@@ -15,8 +15,8 @@ sub new {
     $self->config(cc   => $ENV{CC}) if defined $ENV{CC};
     $self->config(ld   => $ENV{LD}) if defined $ENV{LD};
     $self->config(lddl => $ENV{LD}) if defined $ENV{LD};
-    $self->extra_compiler_flags(split /\s/, $ENV{CFLAGS})  if defined $ENV{CFLAGS};
-    $self->extra_linker_flags(  split /\s/, $ENV{LDFLAGS}) if defined $ENV{LDFLAGS};
+    $self->extra_compiler_flags(grep { $_ ne '' } split /\s/, $ENV{CFLAGS})  if defined $ENV{CFLAGS};
+    $self->extra_linker_flags(  grep { $_ ne '' } split /\s/, $ENV{LDFLAGS}) if defined $ENV{LDFLAGS};
     return $self;
 };
 
