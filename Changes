@@ -1,4 +1,7 @@
 ------------------------------------------------------------------------
+0.0203  2012-11-02      Piotr Roszatycki <dexter@cpan.org>
+
+------------------------------------------------------------------------
 0.0202  2012-11-02      Piotr Roszatycki <dexter@cpan.org>
 
 * Fixed build process on Windows with Interix.
