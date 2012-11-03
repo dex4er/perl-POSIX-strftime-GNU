@@ -274,10 +274,11 @@ my %format = (
     k => sub { sprintf '%2d', $_[HOUR] },
     l => sub { sprintf '%2d', $_[HOUR] % 12 + ($_[HOUR] % 12 == 0 ? 12 : 0) },
     n => sub { "\n" },
+    N => sub { substr sprintf('%.9f', $_[SEC] - int $_[SEC]), 2 },
     P => sub { lc strftime_orig('%p', @_) },
     r => sub { '%I:%M:%S %p' },
     R => sub { '%H:%M' },
-    s => sub { Time::Local::timegm(@_) },
+    s => sub { int Time::Local::timegm(@_) },
     t => sub { "\t" },
     T => sub { '%H:%M:%S' },
     u => sub { my $dw = strftime_orig('%w', @_); $dw += ($dw == 0 ? 7 : 0); $dw },
@@ -292,6 +293,8 @@ my $formats = join '', sort keys %format;
 =item $str = strftime ($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
+
+The non-POSIX feature is that seconds can be float number.
 
 =back
 
@@ -315,7 +318,7 @@ sub strftime {
                 $str =~ s/^([+-])(0+)(\d:.*?|\d$)/' ' x length($2) . $1 . $3/ge;
                 $str =~ s/^(0+)(.+?)$/' ' x length($1) . $2/ge;
             }
-            elsif ($modifier eq '-' and $suffix !~ /0/ and $format =~ /[CdgGHIjmMsSuUVwWyYz]$/) {
+            elsif ($modifier eq '-' and $suffix !~ /0/ and $format =~ /[CdgGHIjmMNsSuUVwWyYz]$/) {
                 $str =~ s/^([+-])(0+)(\d:.*?|\d$)/$1$3/g;
                 $str =~ s/^(0+)(.+?)$/$2/g;
             }
@@ -362,6 +365,7 @@ sub strftime {
     $fmt =~ s/%([1-9][0-9]*)([EO]?[aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
     $fmt =~ s/%([1-9][0-9]*)([%])/sprintf("%$1s%%", '%')/ge;
     $fmt =~ s/%([1-9][0-9]*)([EO]?[CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%([1-9][0-9]*)([N])/sprintf("%0$1.$1s", strftime("%$2", @t))/ge;
     $fmt =~ s/%([1-9][0-9]*)(:*[z])/$strftime_0z->($1, "%$2", @t)/ge;
 
     # "E", "O", ":" modifiers

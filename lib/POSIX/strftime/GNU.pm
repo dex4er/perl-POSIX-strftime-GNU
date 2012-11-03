@@ -59,16 +59,22 @@ use POSIX ();
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
+The nanoseconds can be given as a special and optional argument.
+
 =back
 
 =cut
 
 my ($xs_loaded, $pp_loaded);
 
-if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} and (
-    not defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} or
-    defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} and not $ENV{PERL_POSIX_STRFTIME_GNU_PP}
-) ) {
+my $xs_env = $ENV{PERL_POSIX_STRFTIME_GNU_XS};
+my $pp_env = $ENV{PERL_POSIX_STRFTIME_GNU_PP};
+
+if (
+     (not defined $xs_env or defined $xs_env and $xs_env )
+        and
+     (not defined $pp_env or defined $pp_env and not $pp_env )
+) {
     $xs_loaded = eval {
         require POSIX::strftime::GNU::XS;
         no warnings 'once';
@@ -78,10 +84,7 @@ if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} and (
     die $@ if $@ and $ENV{PERL_POSIX_STRFTIME_GNU_XS};
 };
 
-if (not $xs_loaded and (
-    not defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} or
-    defined $ENV{PERL_POSIX_STRFTIME_GNU_PP} and $ENV{PERL_POSIX_STRFTIME_GNU_PP}
-) ) {
+if (not $xs_loaded and (not defined $pp_env or defined $pp_env and $pp_env)) {
     require POSIX::strftime::GNU::PP;
     no warnings 'once';
     *strftime = *POSIX::strftime::GNU::PP::strftime;
@@ -207,6 +210,11 @@ The minute as a decimal number (range 00 to 59).
 =item %n
 
 A newline character. (SU)
+
+=item %N
+
+Nanoseconds (range 000000000 to 999999999). It is a non-POSIX extension and
+outputs a nanoseconds if there is floating seconds argument.
 
 =item %O
 

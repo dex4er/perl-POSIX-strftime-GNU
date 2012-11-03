@@ -21,14 +21,14 @@
 extern "C" {
 #endif
 
-size_t gnu_strftime (char *, size_t, const char *, const struct tm *);
+size_t strftime (char *, size_t, const char *, const struct tm *);
 
 /* Just like strftime, but with two more arguments:
    POSIX requires that strftime use the local timezone information.
    When __UTC is nonzero and tm->tm_zone is NULL or the empty string,
    use UTC instead.  Use __NS as the number of nanoseconds in the
    %N directive.  */
-size_t nstrftime (char *, size_t, char const *, struct tm const *,
+size_t gnu_strftime (char *, size_t, char const *, struct tm const *,
                   int __utc, int __ns);
 
 #ifdef __cplusplus

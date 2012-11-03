@@ -39,6 +39,8 @@ XSLoader::load(__PACKAGE__, $VERSION);
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
+The non-POSIX feature is that seconds can be float number.
+
 =back
 
 =cut
