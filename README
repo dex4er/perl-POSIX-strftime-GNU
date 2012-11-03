@@ -27,6 +27,10 @@ DESCRIPTION
     The PP module is used when XS module can not be loaded or
     `PERL_POSIX_STRFTIME_GNU_PP' environment variable is true.
 
+    None of these modules are loaded if both `PERL_POSIX_STRFTIME_GNU_PP'
+    and `PERL_POSIX_STRFTIME_GNU_XS' environment variables are defined and
+    false.
+
 BUGS
     If you find the bug or want to implement new features, please report it
     at https://github.com/dex4er/perl-POSIX-strftime-GNU/issues

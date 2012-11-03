@@ -30,11 +30,16 @@ true.
 The PP module is used when XS module can not be loaded or
 `PERL_POSIX_STRFTIME_GNU_PP` environment variable is true.
 
+None of these modules are loaded if both `PERL_POSIX_STRFTIME_GNU_PP` and
+`PERL_POSIX_STRFTIME_GNU_XS` environment variables are defined and false.
+
 # FUNCTIONS
 
 - $str = strftime ($format, @time)
 
 This is replacement for [POSIX::strftime](http://search.cpan.org/perldoc?POSIX#strftime) function.
+
+The nanoseconds can be given as a special and optional argument.
 
 # FORMAT
 
@@ -144,6 +149,11 @@ The minute as a decimal number (range 00 to 59).
 - %n
 
 A newline character. (SU)
+
+- %N
+
+Nanoseconds (range 000000000 to 999999999). It is a non-POSIX extension and
+outputs a nanoseconds if there is floating seconds argument.
 
 - %O
 
