@@ -46,6 +46,9 @@ use constant ISDST => 8;
 my $tzoffset = sub {
     my ($colons, @t) = @_;
 
+    # Normalize @t array, we need seconds without frac
+    $t[SEC] = int $t[SEC];
+
     my $diff = (exists $ENV{TZ} and $ENV{TZ} eq 'GMT')
              ? 0
              : Time::Local::timegm(@t) - Time::Local::timelocal(@t);
@@ -154,8 +157,8 @@ my $tzname = sub {
     my $diff = $tzoffset->(3, @t);
 
     my @t1 = my @t2 = @t;
-    @t1[MDAY,MON] = (1, 1);
-    @t2[MDAY,MON] = (1, 7);
+    @t1[MDAY,MON] = (1, 1);  # winter
+    @t2[MDAY,MON] = (1, 7);  # summer
 
     my $diff1 = $tzoffset->(3, @t1);
     my $diff2 = $tzoffset->(3, @t2);
@@ -201,6 +204,7 @@ my $isodaysnum = sub {
     };
 
     # Normalize @t array, we need WDAY
+    $t[SEC] = int $t[SEC];
     @t = gmtime Time::Local::timegm(@t);
 
     # YEAR is a leap year if and only if (tp->tm_year + TM_YEAR_BASE)
@@ -246,7 +250,6 @@ my $isoyearnum = sub {
 
 my $isoweeknum = sub {
     my @t = @_;
-    @t = gmtime Time::Local::timegm(@t);
     my ($days, $year_adjust) = $isodaysnum->(@t);
     return sprintf '%02d', int($days / 7) + 1;
 };
