@@ -15,10 +15,17 @@ DESCRIPTION
     This is a wrapper for POSIX::strftime which implements more character
     sequences compatible with GNU systems.
 
+    The module is 100% compatible with format of date(1) command from GNU
+    coreutils package.
+
     It can be helpful if you run some software on operating system where
     these extensions, especially `%z' sequence, are not supported, i.e. on
     Microsoft Windows. On such system some software can work incorrectly,
     i.e. logging for Plack and AnyEvent modules might be broken.
+
+    Even GNU C Library's strftime(3) function does not provide 100%
+    compatibility with date(1) command so this module can be useful also on
+    Linux.
 
     The XS module is used if compiler is available and can module can be
     loaded. The XS is mandatory if `PERL_POSIX_STRFTIME_GNU_XS' environment
@@ -32,6 +39,9 @@ DESCRIPTION
     false.
 
 BUGS
+    Timezone name is guessed with several heuristics so it can differ from
+    timezone name returned by date(1) command.
+
     If you find the bug or want to implement new features, please report it
     at https://github.com/dex4er/perl-POSIX-strftime-GNU/issues
 

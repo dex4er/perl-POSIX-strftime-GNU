@@ -22,10 +22,16 @@ command line:
 This is a wrapper for L<POSIX::strftime|POSIX/strftime> which implements more
 character sequences compatible with GNU systems.
 
+The module is 100% compatible with format of date(1) command from GNU
+coreutils package.
+
 It can be helpful if you run some software on operating system where these
 extensions, especially C<%z> sequence, are not supported, i.e. on Microsoft
 Windows. On such system some software can work incorrectly, i.e. logging for
 L<Plack> and L<AnyEvent> modules might be broken.
+
+Even GNU C Library's strftime(3) function does not provide 100% compatibility
+with date(1) command so this module can be useful also on Linux.
 
 The XS module is used if compiler is available and can module can be loaded.
 The XS is mandatory if C<PERL_POSIX_STRFTIME_GNU_XS> environment variable is
@@ -59,7 +65,14 @@ use POSIX ();
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
-The nanoseconds can be given as a special and optional argument.
+The nanoseconds can be given as a fraction of seconds.
+
+  use POSIX::strftime::GNU;
+  use Time::HiRes qw(gettimeofday);
+  my ($t, $nsec) = gettimeofday;
+  my @t = localtime $t;
+  $t[0] += $nsec / 10e5;
+  print strftime('%N', @t);
 
 =back
 
@@ -381,6 +394,9 @@ C<%Z>.)
 =for readme continue
 
 =head1 BUGS
+
+Timezone name is guessed with several heuristics so it can differ from
+timezone name returned by date(1) command.
 
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/perl-POSIX-strftime-GNU/issues>

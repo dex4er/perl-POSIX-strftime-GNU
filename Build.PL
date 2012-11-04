@@ -65,8 +65,12 @@ $build->log_info("Hint: run '$^X Build.PL --pp' if you don't want to compile XS 
 $build->args(pp => 1) if not $build->cbuilder->have_compiler;
 
 if (! $build->args('pp')) {
+    print "POSIX::strftime::GNU configured with XS.\n";
     $build->xs_files({ %{$build->xs_files}, 'xs/strftime.xs' => 'lib/POSIX/strftime/GNU/XS.xs' });
     $build->pm_files({ %{$build->pm_files}, 'lib/POSIX/strftime/GNU/XS.pm' => 'lib/POSIX/strftime/GNU/XS.pm' });
+}
+else {
+    print "POSIX::strftime::GNU configured with Pure Perl.\n";
 };
 
 $build->create_build_script;
