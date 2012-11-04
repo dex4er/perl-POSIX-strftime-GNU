@@ -17,7 +17,7 @@ use Time::Local;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More tests => 222;
+use Test::More tests => 227;
 
 BEGIN { use_ok 'POSIX::strftime::GNU'; }
 BEGIN { use_ok 'POSIX', qw( strftime ); }
@@ -128,6 +128,11 @@ my %format = (
     n      => "\n",
     '12n'  => "           \n",
     '-12n' => "           \n",
+    N      => '123456000',
+    '2N'   => '12',
+    '12N'  => '000123456000',
+    '_12N' => '   123456000',
+    '-12N' => '123456000',
     Od     => '06',
     '12Od' => '000000000006',
     '_12Od' => '           6',
@@ -249,6 +254,7 @@ my %format = (
 );
 
 my @t = localtime timelocal(54, 3, 21, 6, 6, 108);
+$t[0] += 0.123456;
 
 foreach my $f (sort keys %format) {
     if (ref $format{$f} eq 'Regexp') {

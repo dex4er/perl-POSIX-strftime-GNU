@@ -16,13 +16,13 @@ name: POSIX-strftime-GNU
 provides:
   POSIX::strftime::GNU:
     file: lib/POSIX/strftime/GNU.pm
-    version: 0.0202
+    version: 0.03
   POSIX::strftime::GNU::PP:
     file: lib/POSIX/strftime/GNU/PP.pm
-    version: 0.0202
+    version: 0.03
   POSIX::strftime::GNU::XS:
     file: lib/POSIX/strftime/GNU/XS.pm
-    version: 0.0202
+    version: 0.03
 requires:
   XSLoader: 0
   perl: 5.006
@@ -30,4 +30,4 @@ resources:
   bugtracker: http://github.com/dex4er/perl-POSIX-strftime-GNU/issues
   license: http://dev.perl.org/licenses/
   repository: http://github.com/dex4er/perl-POSIX-strftime-GNU
-version: 0.0202
+version: 0.03

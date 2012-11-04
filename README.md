@@ -18,10 +18,16 @@ command line:
 This is a wrapper for [POSIX::strftime](http://search.cpan.org/perldoc?POSIX#strftime) which implements more
 character sequences compatible with GNU systems.
 
+The module is 100% compatible with format of date(1) command from GNU
+coreutils package.
+
 It can be helpful if you run some software on operating system where these
 extensions, especially `%z` sequence, are not supported, i.e. on Microsoft
 Windows. On such system some software can work incorrectly, i.e. logging for
 [Plack](http://search.cpan.org/perldoc?Plack) and [AnyEvent](http://search.cpan.org/perldoc?AnyEvent) modules might be broken.
+
+Even GNU C Library's strftime(3) function does not provide 100% compatibility
+with date(1) command so this module can be useful also on Linux.
 
 The XS module is used if compiler is available and can module can be loaded.
 The XS is mandatory if `PERL_POSIX_STRFTIME_GNU_XS` environment variable is
@@ -30,11 +36,23 @@ true.
 The PP module is used when XS module can not be loaded or
 `PERL_POSIX_STRFTIME_GNU_PP` environment variable is true.
 
+None of these modules are loaded if both `PERL_POSIX_STRFTIME_GNU_PP` and
+`PERL_POSIX_STRFTIME_GNU_XS` environment variables are defined and false.
+
 # FUNCTIONS
 
 - $str = strftime ($format, @time)
 
 This is replacement for [POSIX::strftime](http://search.cpan.org/perldoc?POSIX#strftime) function.
+
+The nanoseconds can be given as a fraction of seconds.
+
+    use POSIX::strftime::GNU;
+    use Time::HiRes qw(gettimeofday);
+    my ($t, $nsec) = gettimeofday;
+    my @t = localtime $t;
+    $t[0] += $nsec / 10e5;
+    print strftime('%N', @t);
 
 # FORMAT
 
@@ -144,6 +162,11 @@ The minute as a decimal number (range 00 to 59).
 - %n
 
 A newline character. (SU)
+
+- %N
+
+Nanoseconds (range 000000000 to 999999999). It is a non-POSIX extension and
+outputs a nanoseconds if there is floating seconds argument.
 
 - %O
 
@@ -299,6 +322,9 @@ conversion specifier characters, and of these, it is only really useful with
 `%Z`.)
 
 # BUGS
+
+Timezone name is guessed with several heuristics so it can differ from
+timezone name returned by date(1) command.
 
 If you find the bug or want to implement new features, please report it at
 [https://github.com/dex4er/perl-POSIX-strftime-GNU/issues](https://github.com/dex4er/perl-POSIX-strftime-GNU/issues)

@@ -22,10 +22,16 @@ command line:
 This is a wrapper for L<POSIX::strftime|POSIX/strftime> which implements more
 character sequences compatible with GNU systems.
 
+The module is 100% compatible with format of date(1) command from GNU
+coreutils package.
+
 It can be helpful if you run some software on operating system where these
 extensions, especially C<%z> sequence, are not supported, i.e. on Microsoft
 Windows. On such system some software can work incorrectly, i.e. logging for
 L<Plack> and L<AnyEvent> modules might be broken.
+
+Even GNU C Library's strftime(3) function does not provide 100% compatibility
+with date(1) command so this module can be useful also on Linux.
 
 The XS module is used if compiler is available and can module can be loaded.
 The XS is mandatory if C<PERL_POSIX_STRFTIME_GNU_XS> environment variable is
@@ -33,6 +39,9 @@ true.
 
 The PP module is used when XS module can not be loaded or
 C<PERL_POSIX_STRFTIME_GNU_PP> environment variable is true.
+
+None of these modules are loaded if both C<PERL_POSIX_STRFTIME_GNU_PP> and
+C<PERL_POSIX_STRFTIME_GNU_XS> environment variables are defined and false.
 
 =for readme stop
 
@@ -43,7 +52,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0202';
+our $VERSION = '0.03';
 
 use Carp ();
 use POSIX ();
@@ -56,13 +65,29 @@ use POSIX ();
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
+The nanoseconds can be given as a fraction of seconds.
+
+  use POSIX::strftime::GNU;
+  use Time::HiRes qw(gettimeofday);
+  my ($t, $nsec) = gettimeofday;
+  my @t = localtime $t;
+  $t[0] += $nsec / 10e5;
+  print strftime('%N', @t);
+
 =back
 
 =cut
 
-my $xs_loaded;
+my ($xs_loaded, $pp_loaded);
 
-if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
+my $xs_env = $ENV{PERL_POSIX_STRFTIME_GNU_XS};
+my $pp_env = $ENV{PERL_POSIX_STRFTIME_GNU_PP};
+
+if (
+     (not defined $xs_env or defined $xs_env and $xs_env )
+        and
+     (not defined $pp_env or defined $pp_env and not $pp_env )
+) {
     $xs_loaded = eval {
         require POSIX::strftime::GNU::XS;
         no warnings 'once';
@@ -72,15 +97,16 @@ if ($ENV{PERL_POSIX_STRFTIME_GNU_XS} or not $ENV{PERL_POSIX_STRFTIME_GNU_PP}) {
     die $@ if $@ and $ENV{PERL_POSIX_STRFTIME_GNU_XS};
 };
 
-if (not $xs_loaded) {
+if (not $xs_loaded and (not defined $pp_env or defined $pp_env and $pp_env)) {
     require POSIX::strftime::GNU::PP;
     no warnings 'once';
     *strftime = *POSIX::strftime::GNU::PP::strftime;
+    $pp_loaded = 1;
 };
 
 sub import {
     my ($class) = @_;
-    *POSIX::strftime = *strftime;
+    *POSIX::strftime = *strftime if $xs_loaded or $pp_loaded;
     return 1;
 };
 
@@ -197,6 +223,11 @@ The minute as a decimal number (range 00 to 59).
 =item %n
 
 A newline character. (SU)
+
+=item %N
+
+Nanoseconds (range 000000000 to 999999999). It is a non-POSIX extension and
+outputs a nanoseconds if there is floating seconds argument.
 
 =item %O
 
@@ -363,6 +394,9 @@ C<%Z>.)
 =for readme continue
 
 =head1 BUGS
+
+Timezone name is guessed with several heuristics so it can differ from
+timezone name returned by date(1) command.
 
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/perl-POSIX-strftime-GNU/issues>

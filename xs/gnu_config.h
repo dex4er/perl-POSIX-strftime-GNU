@@ -28,4 +28,6 @@
 #define HAVE_TZSET 1
 #endif
 
+#define my_strftime gnu_strftime
+
 #endif

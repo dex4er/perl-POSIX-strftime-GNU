@@ -22,7 +22,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0202';
+our $VERSION = '0.03';
 
 use Carp ();
 use Config;
@@ -38,6 +38,8 @@ XSLoader::load(__PACKAGE__, $VERSION);
 =item $str = strftime ($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
+
+The non-POSIX feature is that seconds can be float number.
 
 =back
 

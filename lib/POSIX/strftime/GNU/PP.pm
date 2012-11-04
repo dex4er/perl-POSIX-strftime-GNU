@@ -22,7 +22,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0202';
+our $VERSION = '0.03';
 
 use Carp ();
 use POSIX ();
@@ -45,6 +45,9 @@ use constant ISDST => 8;
 
 my $tzoffset = sub {
     my ($colons, @t) = @_;
+
+    # Normalize @t array, we need seconds without frac
+    $t[SEC] = int $t[SEC];
 
     my $diff = (exists $ENV{TZ} and $ENV{TZ} eq 'GMT')
              ? 0
@@ -154,8 +157,8 @@ my $tzname = sub {
     my $diff = $tzoffset->(3, @t);
 
     my @t1 = my @t2 = @t;
-    @t1[MDAY,MON] = (1, 1);
-    @t2[MDAY,MON] = (1, 7);
+    @t1[MDAY,MON] = (1, 1);  # winter
+    @t2[MDAY,MON] = (1, 7);  # summer
 
     my $diff1 = $tzoffset->(3, @t1);
     my $diff2 = $tzoffset->(3, @t2);
@@ -201,6 +204,7 @@ my $isodaysnum = sub {
     };
 
     # Normalize @t array, we need WDAY
+    $t[SEC] = int $t[SEC];
     @t = gmtime Time::Local::timegm(@t);
 
     # YEAR is a leap year if and only if (tp->tm_year + TM_YEAR_BASE)
@@ -246,7 +250,6 @@ my $isoyearnum = sub {
 
 my $isoweeknum = sub {
     my @t = @_;
-    @t = gmtime Time::Local::timegm(@t);
     my ($days, $year_adjust) = $isodaysnum->(@t);
     return sprintf '%02d', int($days / 7) + 1;
 };
@@ -274,10 +277,11 @@ my %format = (
     k => sub { sprintf '%2d', $_[HOUR] },
     l => sub { sprintf '%2d', $_[HOUR] % 12 + ($_[HOUR] % 12 == 0 ? 12 : 0) },
     n => sub { "\n" },
+    N => sub { substr sprintf('%.9f', $_[SEC] - int $_[SEC]), 2 },
     P => sub { lc strftime_orig('%p', @_) },
     r => sub { '%I:%M:%S %p' },
     R => sub { '%H:%M' },
-    s => sub { Time::Local::timegm(@_) },
+    s => sub { int Time::Local::timegm(@_) },
     t => sub { "\t" },
     T => sub { '%H:%M:%S' },
     u => sub { my $dw = strftime_orig('%w', @_); $dw += ($dw == 0 ? 7 : 0); $dw },
@@ -292,6 +296,8 @@ my $formats = join '', sort keys %format;
 =item $str = strftime ($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
+
+The non-POSIX feature is that seconds can be float number.
 
 =back
 
@@ -315,7 +321,7 @@ sub strftime {
                 $str =~ s/^([+-])(0+)(\d:.*?|\d$)/' ' x length($2) . $1 . $3/ge;
                 $str =~ s/^(0+)(.+?)$/' ' x length($1) . $2/ge;
             }
-            elsif ($modifier eq '-' and $suffix !~ /0/ and $format =~ /[CdgGHIjmMsSuUVwWyYz]$/) {
+            elsif ($modifier eq '-' and $suffix !~ /0/ and $format =~ /[CdgGHIjmMNsSuUVwWyYz]$/) {
                 $str =~ s/^([+-])(0+)(\d:.*?|\d$)/$1$3/g;
                 $str =~ s/^(0+)(.+?)$/$2/g;
             }
@@ -362,6 +368,7 @@ sub strftime {
     $fmt =~ s/%([1-9][0-9]*)([EO]?[aAbBDeFhklnpPrRtTxXZ])/sprintf("%$1s", strftime("%$2", @t))/ge;
     $fmt =~ s/%([1-9][0-9]*)([%])/sprintf("%$1s%%", '%')/ge;
     $fmt =~ s/%([1-9][0-9]*)([EO]?[CdGgHIjmMsSuUVwWyY])/sprintf("%0$1s", strftime("%$2", @t))/ge;
+    $fmt =~ s/%([1-9][0-9]*)([N])/sprintf("%0$1.$1s", strftime("%$2", @t))/ge;
     $fmt =~ s/%([1-9][0-9]*)(:*[z])/$strftime_0z->($1, "%$2", @t)/ge;
 
     # "E", "O", ":" modifiers

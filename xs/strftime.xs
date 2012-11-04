@@ -241,7 +241,7 @@ mini_mktime(struct tm *ptm)
 #endif
 
 static char *
-my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int mon, int year, int wday, int yday, int isdst)
+my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int mon, int year, int wday, int yday, int isdst, int nsec)
 {
   char *buf;
   int buflen;
@@ -279,7 +279,7 @@ my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int
 #endif
   buflen = 64;
   Newx(buf, buflen, char);
-  len = gnu_strftime(buf, buflen, fmt, &mytm);
+  len = gnu_strftime(buf, buflen, fmt, &mytm, 0, nsec);
   /*
   ** The following is needed to handle to the situation where
   ** tmpbuf overflows.  Basically we want to allocate a buffer
@@ -325,7 +325,7 @@ MODULE = POSIX::strftime::GNU::XS    PACKAGE = POSIX::strftime::GNU::XS
 void
 xs_strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)
     SV *            fmt
-    int             sec
+    double          sec
     int             min
     int             hour
     int             mday
@@ -336,8 +336,11 @@ xs_strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = 
     int             isdst
 CODE:
 {
+    char nsec_str[12];
+    sprintf(nsec_str, "%.9f", fabs(sec - (int)sec));
+    int nsec = atoi(nsec_str+2);
 #if (PERL_BCDVERSION >= 0x5011001)
-    char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), sec, min, hour, mday, mon, year, wday, yday, isdst);
+    char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), (int)sec, min, hour, mday, mon, year, wday, yday, isdst, nsec);
     if (buf) {
         SV *const sv = sv_newmortal();
         sv_usepvn_flags(sv, buf, strlen(buf), SV_HAS_TRAILING_NUL);
@@ -347,7 +350,7 @@ CODE:
         ST(0) = sv;
     }
 #else
-    char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), sec, min, hour, mday, mon, year, wday, yday, isdst);
+    char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), (int)sec, min, hour, mday, mon, year, wday, yday, isdst, nsec);
     if (buf) {
         ST(0) = sv_2mortal(newSVpv(buf, 0));
         Safefree(buf);

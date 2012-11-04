@@ -2,6 +2,7 @@ Build.PL
 Changes
 examples/date-822.pl
 examples/date-850.pl
+examples/date-8601.pl
 examples/dump-all.pl
 examples/strftime-all.pl
 examples/strftime.pl
