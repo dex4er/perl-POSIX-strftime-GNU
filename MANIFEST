@@ -20,6 +20,7 @@ README
 README.md
 t/010_use.t
 t/100_strftime.t
+t/120_tmzone.pl
 t/120_tmzone.t
 t/140_isoweek.t
 t/900_date-822.t

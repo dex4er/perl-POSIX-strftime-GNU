@@ -336,11 +336,14 @@ xs_strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = 
     int             isdst
 CODE:
 {
+    int nsec;
+    char *buf;
     char nsec_str[12];
+
     sprintf(nsec_str, "%.9f", fabs(sec - (int)sec));
-    int nsec = atoi(nsec_str+2);
+    nsec = atoi(nsec_str+2);
 #if (PERL_BCDVERSION >= 0x5011001)
-    char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), (int)sec, min, hour, mday, mon, year, wday, yday, isdst, nsec);
+    buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), (int)sec, min, hour, mday, mon, year, wday, yday, isdst, nsec);
     if (buf) {
         SV *const sv = sv_newmortal();
         sv_usepvn_flags(sv, buf, strlen(buf), SV_HAS_TRAILING_NUL);
@@ -350,7 +353,7 @@ CODE:
         ST(0) = sv;
     }
 #else
-    char *buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), (int)sec, min, hour, mday, mon, year, wday, yday, isdst, nsec);
+    buf = my_gnu_strftime(aTHX_ SvPV_nolen(fmt), (int)sec, min, hour, mday, mon, year, wday, yday, isdst, nsec);
     if (buf) {
         ST(0) = sv_2mortal(newSVpv(buf, 0));
         Safefree(buf);

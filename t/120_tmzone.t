@@ -3,33 +3,37 @@
 use strict;
 use warnings;
 
-use constant TMZONE => 'CET-1CEST';
-
-BEGIN {
-    # Windows can't change timezone inside Perl script
-    if (($ENV{TZ}||'') ne TMZONE) {
-        $ENV{TZ} = TMZONE;
-        exec $^X, (map { "-I\"$_\"" } @INC), $0;
-    };
-}
-
 use Carp ();
-use File::Spec;
-use Time::Local;
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };
 
-use Test::More tests => 6;
+use Test::More;
 
-BEGIN { use_ok 'POSIX::strftime::GNU'; }
-BEGIN { use_ok 'POSIX', qw( strftime ); }
+use File::Basename;
 
-POSIX::setlocale(&POSIX::LC_TIME, 'C');
+my $inc = join ' ', map { "-I\"$_\"" } @INC;
+my $dir = dirname(__FILE__);
 
-my @t1 = localtime timelocal(0, 0, 0, 1, 1, 112);
-my @t2 = localtime timelocal(0, 0, 0, 1, 7, 112);
+my $found;
+for my $tz (qw( Poland CET-1CEST )) {
+    $ENV{TZ} = $tz;
+    if (`$^X $inc $dir/120_tmzone.pl` =~ /^\+0[12]00$/) {
+        $found = 1;
+        last;
+    };
+};
 
-is strftime('%z', @t1), '+0100', "tmzone1";
-is strftime('%Z', @t1), 'CET',   "tmname1";
-is strftime('%z', @t2), '+0200', "tmzone2";
-is strftime('%Z', @t2), 'CEST',  "tmname2";
+if ($found) {
+    plan tests => 4;
+}
+else {
+    plan skip_all => 'Missing tzdata on this system';
+};
+
+my @t1 = (0, 0, 0, 1, 1, 112);
+my @t2 = (0, 0, 0, 1, 7, 112);
+
+is `$^X $inc $dir/120_tmzone.pl %z @t1`, '+0100', "tmzone1";
+is `$^X $inc $dir/120_tmzone.pl %Z @t1`, 'CET',   "tmname1";
+is `$^X $inc $dir/120_tmzone.pl %z @t2`, '+0200', "tmzone2";
+is `$^X $inc $dir/120_tmzone.pl %Z @t2`, 'CEST',  "tmname2";
