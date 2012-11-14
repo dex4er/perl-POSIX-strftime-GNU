@@ -1,6 +1,8 @@
 ------------------------------------------------------------------------
 0.0301  2012-11-14      Piotr Roszatycki <dexter@cpan.org>
 
+* More portable XS code and tmzone test.
+
 ------------------------------------------------------------------------
 0.03    2012-11-03      Piotr Roszatycki <dexter@cpan.org>
 
