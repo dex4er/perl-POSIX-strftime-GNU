@@ -22,7 +22,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0301';
+our $VERSION = '0.0302';
 
 use Carp ();
 use POSIX ();
@@ -254,11 +254,12 @@ my $isoweeknum = sub {
     return sprintf '%02d', int($days / 7) + 1;
 };
 
+
 =head1 FUNCTIONS
 
-=over
+=head2 strftime_orig
 
-=item $str = strftime_orig (@time)
+  $str = strftime_orig (@time)
 
 This is original L<POSIX::strftime|POSIX/strftime> function.
 
@@ -293,13 +294,14 @@ my %format = (
 
 my $formats = join '', sort keys %format;
 
-=item $str = strftime ($format, @time)
+
+=head2 strftime
+
+  $str = strftime($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
 The non-POSIX feature is that seconds can be float number.
-
-=back
 
 =cut
 
@@ -402,7 +404,7 @@ Piotr Roszatycki <dexter@cpan.org>
 
 =head1 LICENSE
 
-Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2012, 2013 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.

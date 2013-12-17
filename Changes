@@ -1,35 +1,32 @@
-------------------------------------------------------------------------
+0.0302  2013-12-17      Piotr Roszatycki <dexter@cpan.org>
+
+* XS function xs_strftime was renamed to strftime.
+
 0.0301  2012-11-14      Piotr Roszatycki <dexter@cpan.org>
 
 * More portable XS code and tmzone test.
 
-------------------------------------------------------------------------
 0.03    2012-11-03      Piotr Roszatycki <dexter@cpan.org>
 
 * Support "%N" sequence.
 * Do not load any module if both of PERL_* environment variables are false.
 
-------------------------------------------------------------------------
 0.0202  2012-11-02      Piotr Roszatycki <dexter@cpan.org>
 
 * Fixed build process on Windows with Interix.
 
-------------------------------------------------------------------------
 0.0201  2012-10-23      Piotr Roszatycki <dexter@cpan.org>
 
 * Fixed build process on Windows when current directory contains space
   character.
 
-------------------------------------------------------------------------
 0.02    2012-10-17      Piotr Roszatycki <dexter@cpan.org>
 
 * GNU modifiers (ie. "%-", "%_", etc.) in PP module are fully supported.
 * Sequences "%z" and "%Z" in XS module are also supported.
 * FreeBSD, Solaris 11 and Windows are fully supported.
 
-------------------------------------------------------------------------
 0.01    2012-10-09      Piotr Roszatycki <dexter@cpan.org>
 
 * First CPAN release.
 
-------------------------------------------------------------------------

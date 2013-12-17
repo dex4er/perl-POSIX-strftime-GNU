@@ -24,7 +24,7 @@ cd *-[0-9]*.[0-9]*
 $PERL Build.PL
 $PERL Build
 $PERL Build test
-$PERL -MApp::Prove -e '$a=App::Prove->new;$a->process_args(qw(-Iblib/lib xt));exit($a->run ? 0 : 1)'
+$PERL -MApp::Prove -e '$a=App::Prove->new;$a->process_args(qw(-Iblib/lib -Iblib/arch xt));exit($a->run ? 0 : 1)'
 
 if [ "$1" = sign ]; then
     $PERL Build distsign

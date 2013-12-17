@@ -72,3 +72,8 @@
 \btest-
 \.exe$
 \.o$
+
+# Others
+^lib/.*\.xs$
+^lib/.*\.c$
+^xs/xs_config.h$

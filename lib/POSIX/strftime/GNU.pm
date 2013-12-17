@@ -52,16 +52,16 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0301';
+our $VERSION = '0.0302';
 
 use Carp ();
 use POSIX ();
 
 =head1 FUNCTIONS
 
-=over
+=head2 strftime
 
-=item $str = strftime ($format, @time)
+  $str = strftime($format, @time)
 
 This is replacement for L<POSIX::strftime|POSIX/strftime> function.
 
@@ -73,8 +73,6 @@ The nanoseconds can be given as a fraction of seconds.
   my @t = localtime $t;
   $t[0] += $nsec / 10e5;
   print strftime('%N', @t);
-
-=back
 
 =cut
 
@@ -128,205 +126,205 @@ The following conversion specifications are supported:
 
 =over
 
-=item %a
+=item C<%a>
 
 The abbreviated weekday name according to the current locale.
 
-=item %A
+=item C<%A>
 
 The full weekday name according to the current locale.
 
-=item %b
+=item C<%b>
 
 The abbreviated month name according to the current locale.
 
-=item %B
+=item C<%B>
 
 The full month name according to the current locale.
 
-=item %c
+=item C<%c>
 
 The preferred date and time representation for the current locale.
 
-=item %C
+=item C<%C>
 
 The century number (year/100) as a 2-digit integer. (SU)
 
-=item %d
+=item C<%d>
 
 The day of the month as a decimal number (range 01 to 31).
 
-=item %D
+=item C<%D>
 
 Equivalent to C<%m/%d/%y>. (for Americans only: Americans should note that in
 other countries C<%d/%m/%y> is rather common. This means that in international
 context this format is ambiguous and should not be used.) (SU)
 
-=item %e
+=item C<%e>
 
 Like C<%d>, the day of the month as a decimal number, but a leading zero is
 replaced by a space. (SU)
 
-=item %E
+=item C<%E>
 
 Modifier: use alternative format, see below. (SU)
 
-=item %F
+=item C<%F>
 
 Equivalent to C<%Y-%m-%d> (the ISO 8601 date format). (C99)
 
-=item %G
+=item C<%G>
 
 The ISO 8601 week-based year (see NOTES) with century as a decimal number. The
 4-digit year corresponding to the ISO week number (see C<%V>). This has the
 same format and value as %Y, except that if the ISO week number belongs to the
 previous or next year, that year is used instead. (TZ)
 
-=item %g
+=item C<%g>
 
 Like C<%G>, but without century, that is, with a 2-digit year (00-99). (TZ)
 
-=item %h
+=item C<%h>
 
 Equivalent to C<%b>. (SU)
 
-=item %H
+=item C<%H>
 
 The hour as a decimal number using a 24-hour clock (range 00 to 23).
 
-=item %I
+=item C<%I>
 
 The hour as a decimal number using a 12-hour clock (range 01 to 12).
 
-=item %j
+=item C<%j>
 
 The day of the year as a decimal number (range 001 to 366).
 
-=item %k
+=item C<%k>
 
 The hour (24-hour clock) as a decimal number (range 0 to 23); single digits
 are preceded by a blank. (See also C<%H>.) (TZ)
 
-=item %l
+=item C<%l>
 
 The hour (12-hour clock) as a decimal number (range 1 to 12); single digits
 are preceded by a blank. (See also C<%I>.) (TZ)
 
-=item %m
+=item C<%m>
 
 The month as a decimal number (range 01 to 12).
 
-=item %M
+=item C<%M>
 
 The minute as a decimal number (range 00 to 59).
 
-=item %n
+=item C<%n>
 
 A newline character. (SU)
 
-=item %N
+=item C<%N>
 
 Nanoseconds (range 000000000 to 999999999). It is a non-POSIX extension and
 outputs a nanoseconds if there is floating seconds argument.
 
-=item %O
+=item C<%O>
 
 Modifier: use alternative format, see below. (SU)
 
-=item %p
+=item C<%p>
 
 Either "AM" or "PM" according to the given time value, or the corresponding
 strings for the current locale. Noon is treated as "PM" and midnight as "AM".
 
-=item %P
+=item C<%P>
 
 Like C<%p> but in lowercase: "am" or "pm" or a corresponding string for the
 current locale. (GNU)
 
-=item %r
+=item C<%r>
 
 The time in a.m. or p.m. notation. In the POSIX locale this is equivalent to
 C<%I:%M:%S %p>. (SU)
 
-=item %R
+=item C<%R>
 
 The time in 24-hour notation (%H:%M). (SU) For a version including the
 seconds, see C<%T> below.
 
-=item %s
+=item C<%s>
 
 The number of seconds since the Epoch, 1970-01-01 00:00:00 +0000 (UTC). (TZ)
 
-=item %S
+=item C<%S>
 
 The second as a decimal number (range 00 to 60). (The range is up to 60 to
 allow for occasional leap seconds.)
 
-=item %t
+=item C<%t>
 
 A tab character. (SU)
 
-=item %T
+=item C<%T>
 
 The time in 24-hour notation (C<%H:%M:%S>). (SU)
 
-=item %u
+=item C<%u>
 
 The day of the week as a decimal, range 1 to 7, Monday being 1. See also
 C<%w>. (SU)
 
-=item %U
+=item C<%U>
 
 The week number of the current year as a decimal number, range 00 to 53,
 starting with the first Sunday as the first day of week 01. See also C<%V> and
 C<%W>.
 
-=item %V
+=item C<%V>
 
 The ISO 8601 week number (see NOTES) of the current year as a decimal number,
 range 01 to 53, where week 1 is the first week that has at least 4 days in the
 new year. See also C<%U> and C<%W>. (SU)
 
-=item %w
+=item C<%w>
 
 The day of the week as a decimal, range 0 to 6, Sunday being 0. See also
 C<%u>.
 
-=item %W
+=item C<%W>
 
 The week number of the current year as a decimal number, range 00 to 53,
 starting with the first Monday as the first day of week 01.
 
-=item %x
+=item C<%x>
 
 The preferred date representation for the current locale without the time.
 
-=item %X
+=item C<%X>
 
 The preferred time representation for the current locale without the date.
 
-=item %y
+=item C<%y>
 
 The year as a decimal number without a century (range 00 to 99).
 
-=item %Y
+=item C<%Y>
 
 The year as a decimal number including the century.
 
-=item %z
+=item C<%z>
 
 The C<+hhmm> or C<-hhmm> numeric timezone (that is, the hour and minute offset
 from UTC). (SU)
 
-=item %Z
+=item C<%Z>
 
 The timezone or name or abbreviation.
 
-=item %+
+=item C<%+>
 
 The date and time in date(1) format. (TZ) (Not supported in glibc2.)
 
-=item %%
+=item C<%%>
 
 A literal C<%> character.
 
@@ -366,24 +364,24 @@ The following flag characters are permitted:
 
 =over
 
-=item _
+=item C<_>
 
 (underscore) Pad a numeric result string with spaces.
 
-=item -
+=item C<->
 
 (dash) Do not pad a numeric result string.
 
-=item 0
+=item C<0>
 
 Pad a numeric result string with zeros even if the conversion specifier
 character uses space-padding by default.
 
-=item ^
+=item C<^>
 
 Convert alphabetic characters in result string to upper case.
 
-=item #
+=item C<#>
 
 Swap the case of the result string. (This flag only works with certain
 conversion specifier characters, and of these, it is only really useful with
@@ -410,7 +408,7 @@ Piotr Roszatycki <dexter@cpan.org>
 
 =head1 LICENSE
 
-Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2012, 2013 Piotr Roszatycki <dexter@cpan.org>.
 
 Format specification is based on strftime(3) manual page which is a part of
 the Linux man-pages project.
