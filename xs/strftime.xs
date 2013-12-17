@@ -1,6 +1,6 @@
 /*    POSIX::strftime::GNU::XS - XS extension for POSIX::strftime::GNU
  *
- *    Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
+ *    Copyright (c) 2012, 2013 Piotr Roszatycki <dexter@cpan.org>.
  *
  *    This is free software; you can redistribute it and/or modify it under
  *    the same terms as perl itself.
@@ -320,7 +320,7 @@ my_gnu_strftime(pTHX_ const char *fmt, int sec, int min, int hour, int mday, int
 }
 
 
-MODULE = POSIX::strftime::GNU::XS    PACKAGE = POSIX::strftime::GNU::XS
+MODULE = POSIX::strftime::GNU::XS  PACKAGE = POSIX::strftime::GNU::XS  PREFIX = xs_
 
 void
 xs_strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)

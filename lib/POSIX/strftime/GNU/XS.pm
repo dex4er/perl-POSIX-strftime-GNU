@@ -45,9 +45,6 @@ The non-POSIX feature is that seconds can be float number.
 
 =cut
 
-no warnings 'once';
-*strftime = *xs_strftime;
-
 
 1;
 
@@ -62,7 +59,7 @@ Piotr Roszatycki <dexter@cpan.org>
 
 =head1 LICENSE
 
-Copyright (c) 2012 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2012, 2013 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.
