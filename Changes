@@ -1,5 +1,6 @@
-0.0302  2013-12-17      Piotr Roszatycki <dexter@cpan.org>
+0.0302  2013-12-18      Piotr Roszatycki <dexter@cpan.org>
 
+* Compatibility with Solaris 10 and Solaris Studio 12.3 C Compiler.
 * XS function xs_strftime was renamed to strftime.
 
 0.0301  2012-11-14      Piotr Roszatycki <dexter@cpan.org>
