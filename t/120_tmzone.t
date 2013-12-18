@@ -17,7 +17,7 @@ my $dir = dirname(__FILE__);
 my $found;
 for my $tz (qw( Poland CET-1CEST )) {
     $ENV{TZ} = $tz;
-    if (`$^X $inc $dir/120_tmzone.pl` =~ /^\+0[12]00$/) {
+    if (`$^X $inc $dir/120_tmzone.pl %z 0 0 0 1 1 112` =~ /^\+0[12]00$/) {
         $found = 1;
         last;
     };
