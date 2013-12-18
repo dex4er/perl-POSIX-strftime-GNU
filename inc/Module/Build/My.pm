@@ -102,7 +102,7 @@ EOF
 
     foreach my $flag ('', qw( -xc99 -std=c99 )) {
         next unless $chk->try_compile_run(
-            extra_compiler_flags => [ $flag ],
+            $flag ? (extra_compiler_flags => [ $flag ]) : (),
             source => << "EOF" );
 #include <stdbool.h>
 int main ()
@@ -110,6 +110,7 @@ int main ()
     return 0;
 }
 EOF
+        next unless $flag;
         $self->extra_compiler_flags( @{$self->extra_compiler_flags}, $flag );
         last;
     }
