@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dex4er/perl-POSIX-strftime-GNU.png?branch=master)](https://travis-ci.org/dex4er/perl-POSIX-strftime-GNU)
+
 # NAME
 
 POSIX::strftime::GNU - strftime with GNU extensions
