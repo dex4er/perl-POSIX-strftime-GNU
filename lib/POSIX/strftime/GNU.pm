@@ -408,7 +408,7 @@ Piotr Roszatycki <dexter@cpan.org>
 
 =head1 LICENSE
 
-Copyright (c) 2012, 2013 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2012-2014 Piotr Roszatycki <dexter@cpan.org>.
 
 Format specification is based on strftime(3) manual page which is a part of
 the Linux man-pages project.
