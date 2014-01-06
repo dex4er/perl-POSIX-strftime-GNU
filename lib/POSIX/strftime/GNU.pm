@@ -391,6 +391,12 @@ C<%Z>.)
 
 =for readme continue
 
+=head1 INSTALLING
+
+=head2 Cygwin
+
+This module requires C<libcrypt-devel> package.
+
 =head1 BUGS
 
 Timezone name is guessed with several heuristics so it can differ from

@@ -328,6 +328,12 @@ The following flag characters are permitted:
     conversion specifier characters, and of these, it is only really useful with
     `%Z`.)
 
+# INSTALLING
+
+## Cygwin
+
+This module requires `libcrypt-devel` package.
+
 # BUGS
 
 Timezone name is guessed with several heuristics so it can differ from

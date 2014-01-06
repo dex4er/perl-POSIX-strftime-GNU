@@ -38,6 +38,10 @@ DESCRIPTION
     and `PERL_POSIX_STRFTIME_GNU_XS' environment variables are defined and
     false.
 
+INSTALLING
+  Cygwin
+    This module requires `libcrypt-devel' package.
+
 BUGS
     Timezone name is guessed with several heuristics so it can differ from
     timezone name returned by date(1) command.
