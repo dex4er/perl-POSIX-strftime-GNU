@@ -52,7 +52,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0302';
+our $VERSION = '0.0303';
 
 use Carp ();
 use POSIX ();
