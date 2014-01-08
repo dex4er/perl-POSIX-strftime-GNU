@@ -100,20 +100,23 @@ main()
 EOF
     };
 
-    foreach my $flag ('', qw( -xc99 -std=c99 )) {
-        next unless $chk->try_compile_run(
-            $flag ? (extra_compiler_flags => [ $flag ]) : (),
-            source => << "EOF" );
+    $chk->try_compile_run(
+        define => 'HAVE_STDBOOL_H 1',
+        source => << "EOF" );
 #include <stdbool.h>
-int main ()
-{
-    return 0;
+int main () {
+    return false;
 }
 EOF
-        next unless $flag;
-        $self->extra_compiler_flags( @{$self->extra_compiler_flags}, $flag );
-        last;
-    }
+
+    $chk->try_compile_run(
+        define => 'HAVE__BOOL 1',
+        source => << "EOF" );
+int main () {
+    _Bool b = 0;
+    return b;
+}
+EOF
 
     return 1;
 };

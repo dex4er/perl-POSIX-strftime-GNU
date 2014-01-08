@@ -18,6 +18,7 @@
 
 
 #include "gnu_config.h"
+#include "portable_stdbool.h"
 #include "gnu_strftime.h"
 #include "time_r.h"
 
@@ -51,7 +52,6 @@ extern char *tzname[];
 #endif
 
 #include <limits.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
