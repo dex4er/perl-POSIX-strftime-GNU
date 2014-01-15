@@ -177,8 +177,8 @@ sub ACTION_test_xs {
 sub ACTION_test {
     my $self = shift;
     $self->depends_on('test_core') if $ENV{TEST_CORE};
-    $self->depends_on('test_pp');
     $self->depends_on('test_xs') unless $self->args('pp');
+    $self->depends_on('test_pp');
 };
 
 1;
