@@ -1,6 +1,7 @@
-0.0303  2014-01-06      Piotr Roszatycki <dexter@cpan.org>
+0.0303  2014-01-15      Piotr Roszatycki <dexter@cpan.org>
 
-* ???
+* Do not need c99 compiler mode.
+* Compatibility with Solaris 10 on Sparc.
 
 0.0302  2013-12-24      Piotr Roszatycki <dexter@cpan.org>
 
