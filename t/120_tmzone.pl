@@ -3,11 +3,14 @@
 use strict;
 use warnings;
 
+use Config;
 use POSIX::strftime::GNU;
 use POSIX qw(strftime);
 use Time::Local;
 
-POSIX::setlocale(&POSIX::LC_TIME, 'C');
+if ($Config{d_setlocale}) {
+    POSIX::setlocale(&POSIX::LC_TIME, 'C');
+}
 
 my $fmt = shift @ARGV || '%z';
 my @t = @ARGV ? localtime timelocal(@ARGV) : localtime;

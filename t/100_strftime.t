@@ -12,6 +12,7 @@ BEGIN {
 }
 
 use Carp ();
+use Config;
 use File::Spec;
 use Time::Local;
 
@@ -22,7 +23,9 @@ use Test::More tests => 227;
 BEGIN { use_ok 'POSIX::strftime::GNU'; }
 BEGIN { use_ok 'POSIX', qw( strftime ); }
 
-POSIX::setlocale(&POSIX::LC_TIME, 'C');
+if ($Config{d_setlocale}) {
+    POSIX::setlocale(&POSIX::LC_TIME, 'C');
+}
 
 my %format = (
     a      => 'Sun',

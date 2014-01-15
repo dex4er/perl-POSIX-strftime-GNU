@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Carp ();
+use Config;
 use File::Spec;
 use Time::Local;
 
@@ -14,7 +15,9 @@ use Test::More tests => 8;
 BEGIN { use_ok 'POSIX::strftime::GNU'; }
 BEGIN { use_ok 'POSIX', qw( strftime ); }
 
-POSIX::setlocale(&POSIX::LC_TIME, 'C');
+if ($Config{d_setlocale}) {
+    POSIX::setlocale(&POSIX::LC_TIME, 'C');
+}
 
 is strftime('%gW%V', (0, 0, 0, 31, 11, 111)), '11W52', '2011-12-31';
 is strftime('%gW%V', (0, 0, 0,  1,  0, 112)), '11W52', '2012-01-01';
