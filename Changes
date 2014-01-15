@@ -2,6 +2,7 @@
 
 * Do not need c99 compiler mode.
 * Compatibility with Solaris 10 on Sparc.
+* Testing original POSIX::strftime is disabled by default.
 
 0.0302  2013-12-24      Piotr Roszatycki <dexter@cpan.org>
 
