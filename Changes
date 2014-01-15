@@ -1,3 +1,7 @@
+0.0304  2014-01-15      Piotr Roszatycki <dexter@cpan.org>
+
+?
+
 0.0303  2014-01-15      Piotr Roszatycki <dexter@cpan.org>
 
 * Do not need c99 compiler mode.
