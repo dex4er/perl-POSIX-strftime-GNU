@@ -1,4 +1,4 @@
-0.0304  2014-01-15      Piotr Roszatycki <dexter@cpan.org>
+0.0304  2014-01-21      Piotr Roszatycki <dexter@cpan.org>
 
 * Compatibility with systems without locales (Android).
 
