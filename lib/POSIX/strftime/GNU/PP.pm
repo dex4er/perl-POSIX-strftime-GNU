@@ -38,6 +38,11 @@ use constant WDAY  => 6;
 use constant YDAY  => 7;
 use constant ISDST => 8;
 
+use constant HAS_TZNAME => do {
+    local $ENV{TZ} = 'Europe/London';
+    !!(POSIX::strftime("%Z",0,0,0,1,6,114) eq 'BST');
+};
+
 # $str = tzoffset (@time)
 #
 # Returns the C<+hhmm> or C<-hhmm> numeric timezone (the hour and minute offset
@@ -151,7 +156,7 @@ my @offset2zone = qw(
 #
 # Returns the abbreviation of the time zone (e.g. "UTC" or "CEST").
 
-my $tzname = sub {
+my $tzname = HAS_TZNAME ? sub { '%Z' } : sub {
     my @t = @_;
 
     return 'GMT' if exists $ENV{TZ} and $ENV{TZ} eq 'GMT';
