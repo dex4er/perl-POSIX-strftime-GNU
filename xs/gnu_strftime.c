@@ -1422,7 +1422,7 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
           /* The tzset() call might have changed the value.  */
           if (!(zone && *zone) && tp->tm_isdst >= 0)
             zone = tzname[tp->tm_isdst != 0];
-#endif
+#else
           {
             int diff, diff1, diff2;
             int i;
@@ -1473,6 +1473,7 @@ strftime_case_ (bool upcase, STREAM_OR_CHAR_T *s,
                   zone = "Etc";
               }
           }
+#endif
 
 #ifdef COMPILE_WIDE
           {
