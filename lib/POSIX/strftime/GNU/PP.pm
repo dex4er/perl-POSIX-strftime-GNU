@@ -57,25 +57,27 @@ my $tzoffset = sub {
     my $m = $diff / 60 % 60;
     my $s = $diff % 60;
 
-    my $fmt = do {
-        if ($colons == 0) {
-            '%+03d%02u';
+    if ($colons == 0) {
+        return sprintf '%+03d%02u', $h, $m;
+    }
+    elsif ($colons == 1) {
+        return sprintf '%+03d:%02u', $h, $m;
+    }
+    elsif ($colons == 2) {
+        return sprintf '%+03d:%02u:%02u', $h, $m, $s;
+    }
+    elsif ($colons == 3) {
+        if ($s) {
+            return sprintf '%+03d:%02u:%02u', $h, $m, $s;
+        } elsif ($m) {
+            return sprintf '%+03d:%02u', $h, $m;
+        } else {
+            return sprintf '%+03d', $h;
         }
-        elsif ($colons == 1) {
-            '%+03d:%02u';
-        }
-        elsif ($colons == 2) {
-            '%+03d:%02u:%02u';
-        }
-        elsif ($colons == 3) {
-            $s ? '%+03d:%02u:%02u' : $m ? '%+03d:%02u' : '%+03d';
-        }
-        else {
-            '%%' . ':' x $colons . 'z';
-        };
+    }
+    else {
+        return '%%' . ':' x $colons . 'z';
     };
-
-    return sprintf $fmt, $h, $m, $s;
 };
 
 my @offset2zone = qw(
