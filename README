@@ -1,7 +1,9 @@
 NAME
+
     POSIX::strftime::GNU - strftime with GNU extensions
 
 SYNOPSIS
+
       use POSIX::strftime::GNU;
       use POSIX 'strftime';
       print POSIX::strftime('%a, %d %b %Y %T %z', localtime);
@@ -12,6 +14,7 @@ SYNOPSIS
       C:\> perl -MPOSIX::strftime::GNU -MAnyEvent -e "AE::cv->send"
 
 DESCRIPTION
+
     This is a wrapper for POSIX::strftime which implements more character
     sequences compatible with GNU systems.
 
@@ -19,7 +22,7 @@ DESCRIPTION
     coreutils package.
 
     It can be helpful if you run some software on operating system where
-    these extensions, especially `%z' sequence, are not supported, i.e. on
+    these extensions, especially %z sequence, are not supported, i.e. on
     Microsoft Windows. On such system some software can work incorrectly,
     i.e. logging for Plack and AnyEvent modules might be broken.
 
@@ -28,21 +31,23 @@ DESCRIPTION
     Linux.
 
     The XS module is used if compiler is available and can module can be
-    loaded. The XS is mandatory if `PERL_POSIX_STRFTIME_GNU_XS' environment
+    loaded. The XS is mandatory if PERL_POSIX_STRFTIME_GNU_XS environment
     variable is true.
 
     The PP module is used when XS module can not be loaded or
-    `PERL_POSIX_STRFTIME_GNU_PP' environment variable is true.
+    PERL_POSIX_STRFTIME_GNU_PP environment variable is true.
 
-    None of these modules are loaded if both `PERL_POSIX_STRFTIME_GNU_PP'
-    and `PERL_POSIX_STRFTIME_GNU_XS' environment variables are defined and
-    false.
+    None of these modules are loaded if both PERL_POSIX_STRFTIME_GNU_PP and
+    PERL_POSIX_STRFTIME_GNU_XS environment variables are defined and false.
 
 INSTALLING
-  Cygwin
-    This module requires `libcrypt-devel' package.
+
+ Cygwin
+
+    This module requires libcrypt-devel package.
 
 BUGS
+
     Timezone name is guessed with several heuristics so it can differ from
     timezone name returned by date(1) command.
 
@@ -53,13 +58,15 @@ BUGS
     http://github.com/dex4er/perl-POSIX-strftime-GNU
 
 AUTHOR
+
     Piotr Roszatycki <dexter@cpan.org>
 
 LICENSE
+
     Copyright (c) 2012-2014 Piotr Roszatycki <dexter@cpan.org>.
 
-    Format specification is based on strftime(3) manual page which is a part
-    of the Linux man-pages project.
+    Format specification is based on strftime(3) manual page which is a
+    part of the Linux man-pages project.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as perl itself.

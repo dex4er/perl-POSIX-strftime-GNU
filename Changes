@@ -1,6 +1,7 @@
-0.0305  2014-11-14      Piotr Roszatycki <dexter@cpan.org>
+0.0305  2014-11-15      Piotr Roszatycki <dexter@cpan.org>
 
 * Preventing "Redundant argument in sprintf" warning in Perl 5.21.x.
+* Using original system's "%Z" sequence if it works correctly.
 
 0.0304  2014-01-21      Piotr Roszatycki <dexter@cpan.org>
 
